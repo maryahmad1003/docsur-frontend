@@ -1,28 +1,32 @@
 {
   "compilerOptions": {
-    "types": ["node"],
+    "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": false,
+
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+
+    /* 🔥 LA CORRECTION ICI */
+    "moduleResolution": "bundler",
+
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+
     "jsx": "react-jsx",
+
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }
-
-
-
