@@ -1,0 +1,200 @@
+{
+  "app_name": "DocSecur",
+
+  "auth": {
+    "login": "Dugg",
+    "register": "Bindu",
+    "logout": "Génn",
+    "email": "Adrès imeel",
+    "password": "Mbaar ak diggu-bëpp",
+    "confirm_password": "Seytoo mbaar bi",
+    "forgot_password": "Def naa ci bakkan mbaar bi?",
+    "connecting": "Dugg dafa yëgël...",
+    "registering": "Bindu dafa yëgël...",
+    "login_success": "Dugg ak jàmm",
+    "logout_success": "Génn ak jàmm",
+    "invalid_credentials": "Samp yi dañu foog",
+    "account_disabled": "Kont bi dafa toq. Jokkoo ak administrateur bi."
+  },
+
+  "nav": {
+    "dashboard": "Taablo bii",
+    "patients": "Bëgg-bëgg yi",
+    "consultations": "Lekk-tannal yi",
+    "prescriptions": "Ordonnance yi",
+    "rendez_vous": "Rendez-vous yi",
+    "teleconsultation": "Téléconsultation",
+    "resultats": "Njëgël ak résultat yi",
+    "notifications": "Waxtaan yi",
+    "messages": "Xabaar yi",
+    "profil": "Suma profil",
+    "dossier_medical": "Dossier médical bi",
+    "carnet_vaccination": "Carnet vaccination bi",
+    "statistiques": "Statistiques",
+    "centres_sante": "Wëlteef ak santé",
+    "campagnes": "Campagne yi",
+    "utilisateurs": "Jëfandikukat yi",
+    "ordonnances": "Ordonnance yi",
+    "pharmacie": "Pharmacie bi",
+    "laboratoire": "Laboratoire bi",
+    "demandes_analyse": "Demande analyse yi"
+  },
+
+  "common": {
+    "search": "Seet...",
+    "add": "Yokk",
+    "edit": "Soppi",
+    "delete": "Mujj",
+    "save": "Dugal",
+    "cancel": "Baaxi",
+    "confirm": "Seytoo",
+    "export": "Yóbbu",
+    "see_more": "Xool ci kanam",
+    "no_result": "Dara amul",
+    "loading": "Yëgëlaan...",
+    "send": "Yónn",
+    "close": "Tëj",
+    "back": "Dellu",
+    "next": "Kanam",
+    "previous": "Ginnaaw",
+    "page": "Xët bi",
+    "of": "ci",
+    "yes": "Waaw",
+    "no": "Déedéet",
+    "welcome": "Dalal jamm",
+    "error": "Askan",
+    "success": "Jàmm ak yëgël",
+    "created_at": "Def ci",
+    "updated_at": "Soppi ci",
+    "actions": "Liggéey yi",
+    "status": "Yoon bi",
+    "filter": "Tëg ci",
+    "all": "Yëpp",
+    "per_page": "Ci xët",
+    "total": "Raffet bi",
+    "print": "Dagg",
+    "download": "Taxaw",
+    "upload": "Yóbbu fii"
+  },
+
+  "user": {
+    "nom": "Sant bi",
+    "prenom": "Turu réew mi",
+    "telephone": "Telefon bi",
+    "role": "Liggéey bi",
+    "langue": "Làkk bi",
+    "photo": "Xët boppam bi",
+    "est_actif": "Jëfandiku",
+    "created_at": "Bindu ci",
+    "roles": {
+      "medecin": "Doktoor bi",
+      "patient": "Bëgg-bëgg bi",
+      "administrateur": "Administrateur bi",
+      "pharmacien": "Pharmacien bi",
+      "laborantin": "Laborantin bi"
+    }
+  },
+
+  "patient": {
+    "num_dossier": "N° dossier bi",
+    "date_naissance": "Fan a jëm?",
+    "sexe": "Jigéen walla gorgor",
+    "groupe_sanguin": "Jën àddina bi",
+    "adresse": "Adresse bi",
+    "antecedents": "Yëngël yu màggi yi",
+    "allergies": "Allergie yi",
+    "new": "Bëgg-bëgg bu bees",
+    "list": "Liste bëgg-bëgg yi",
+    "detail": "Xeebar bëgg-bëgg bi",
+    "historique": "Tariix médical bi"
+  },
+
+  "consultation": {
+    "motif": "Yégël motif bi",
+    "diagnostic": "Diagnostic bi",
+    "notes": "Xeebar yi",
+    "date": "Bés bi",
+    "tension": "Àddina jën bi",
+    "poids": "Meteel bi (kg)",
+    "taille": "Gudda bi (cm)",
+    "temperature": "Tangaay bi (°C)",
+    "frequence_cardiaque": "Bataaxal bi",
+    "imc": "IMC bi",
+    "saturation": "O₂ bi",
+    "urgence": "Yaatal urgence bi",
+    "type": "Xeebar consultation bi",
+    "new": "Consultation bu bees",
+    "list": "Consultation yi",
+    "urgence_levels": {
+      "faible": "Dëkk bi",
+      "moderate": "Bu tollu",
+      "urgent": "Jaasa",
+      "critique": "Jaasa lool"
+    },
+    "types": {
+      "presentiel": "Ci kaw",
+      "teleconsultation": "Téléconsultation"
+    }
+  },
+
+  "prescription": {
+    "medicaments": "Rem yi",
+    "posologie": "Posologie bi",
+    "duree": "Yëgëlaan bi",
+    "date_emission": "Bés def bi",
+    "statut": "Yoon bi",
+    "send_pharmacy": "Yónn pharmacie bi",
+    "statuts": {
+      "en_attente": "Suñu dëkk",
+      "envoyee": "Yonnee naa",
+      "delivree": "Jënd naa"
+    }
+  },
+
+  "teleconsultation": {
+    "new": "Téléconsultation bu bees",
+    "join": "Dugg",
+    "start": "Tàng",
+    "end": "Tëj",
+    "link": "Lien bi",
+    "date_debut": "Bés ak waxtaan bi",
+    "motif": "Motif bi",
+    "patient_notified": "Bëgg-bëgg bi xaar naa waxtaan",
+    "statuts": {
+      "planifiee": "Def ak xeebaar",
+      "en_cours": "Ci kaw",
+      "terminee": "Tëj",
+      "annulee": "Baaxi"
+    }
+  },
+
+  "message": {
+    "new": "Xabaar bu bees",
+    "send": "Yónn",
+    "write": "Bind xabaar...",
+    "no_conversation": "Xabaar amul",
+    "select_contact": "Tann contact bi ngir tàng",
+    "attach_file": "Yokk fichier",
+    "unread": "xaaroon",
+    "unread_plural": "xaaroon"
+  },
+
+  "notification": {
+    "title": "Waxtaan yi",
+    "mark_read": "Def ko gis",
+    "mark_all_read": "Def ñëpp gis",
+    "no_notification": "Waxtaan amul",
+    "unread_count": "{{count}} xaaroon"
+  },
+
+  "errors": {
+    "required": "Défar sa baat",
+    "email_invalid": "Imeel bi dafa foog",
+    "password_min": "Mbaar bi dafa dëkk — 8 coco ci kanam",
+    "password_match": "Mbaar yi dañu bëgg",
+    "network": "Réseau bi dafa tëj. Xool sa connexion.",
+    "not_found": "Seet dafa gëna kanam",
+    "server": "Serveur bi dafa foog. Seetu kanam.",
+    "unauthorized": "Amul sa jëfandikukat ci liggéey bii"
+  }
+}

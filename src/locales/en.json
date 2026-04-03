@@ -1,0 +1,200 @@
+{
+  "app_name": "DocSecur",
+
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email address",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "forgot_password": "Forgot password?",
+    "connecting": "Connecting...",
+    "registering": "Registering...",
+    "login_success": "Login successful",
+    "logout_success": "Logout successful",
+    "invalid_credentials": "Invalid credentials",
+    "account_disabled": "Account disabled. Contact the administrator."
+  },
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "consultations": "Consultations",
+    "prescriptions": "Prescriptions",
+    "rendez_vous": "Appointments",
+    "teleconsultation": "Teleconsultation",
+    "resultats": "Results",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "profil": "My profile",
+    "dossier_medical": "Medical record",
+    "carnet_vaccination": "Vaccination booklet",
+    "statistiques": "Statistics",
+    "centres_sante": "Health centers",
+    "campagnes": "Campaigns",
+    "utilisateurs": "Users",
+    "ordonnances": "Prescriptions",
+    "pharmacie": "Pharmacy",
+    "laboratoire": "Laboratory",
+    "demandes_analyse": "Analysis requests"
+  },
+
+  "common": {
+    "search": "Search...",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "export": "Export",
+    "see_more": "See more",
+    "no_result": "No results",
+    "loading": "Loading...",
+    "send": "Send",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "page": "Page",
+    "of": "of",
+    "yes": "Yes",
+    "no": "No",
+    "welcome": "Welcome",
+    "error": "Error",
+    "success": "Success",
+    "created_at": "Created on",
+    "updated_at": "Updated on",
+    "actions": "Actions",
+    "status": "Status",
+    "filter": "Filter",
+    "all": "All",
+    "per_page": "Per page",
+    "total": "Total",
+    "print": "Print",
+    "download": "Download",
+    "upload": "Upload"
+  },
+
+  "user": {
+    "nom": "Last name",
+    "prenom": "First name",
+    "telephone": "Phone",
+    "role": "Role",
+    "langue": "Language",
+    "photo": "Profile picture",
+    "est_actif": "Active",
+    "created_at": "Registered on",
+    "roles": {
+      "medecin": "Doctor",
+      "patient": "Patient",
+      "administrateur": "Administrator",
+      "pharmacien": "Pharmacist",
+      "laborantin": "Lab technician"
+    }
+  },
+
+  "patient": {
+    "num_dossier": "File number",
+    "date_naissance": "Date of birth",
+    "sexe": "Gender",
+    "groupe_sanguin": "Blood type",
+    "adresse": "Address",
+    "antecedents": "Medical history",
+    "allergies": "Known allergies",
+    "new": "New patient",
+    "list": "Patient list",
+    "detail": "Patient details",
+    "historique": "Medical history"
+  },
+
+  "consultation": {
+    "motif": "Reason for visit",
+    "diagnostic": "Diagnosis",
+    "notes": "Notes",
+    "date": "Date",
+    "tension": "Blood pressure",
+    "poids": "Weight (kg)",
+    "taille": "Height (cm)",
+    "temperature": "Temperature (°C)",
+    "frequence_cardiaque": "Heart rate",
+    "imc": "BMI",
+    "saturation": "O₂ saturation",
+    "urgence": "Urgency level",
+    "type": "Consultation type",
+    "new": "New consultation",
+    "list": "Consultations",
+    "urgence_levels": {
+      "faible": "Low",
+      "moderate": "Moderate",
+      "urgent": "Urgent",
+      "critique": "Critical"
+    },
+    "types": {
+      "presentiel": "In-person",
+      "teleconsultation": "Teleconsultation"
+    }
+  },
+
+  "prescription": {
+    "medicaments": "Medications",
+    "posologie": "Dosage",
+    "duree": "Duration",
+    "date_emission": "Issue date",
+    "statut": "Status",
+    "send_pharmacy": "Send to pharmacy",
+    "statuts": {
+      "en_attente": "Pending",
+      "envoyee": "Sent",
+      "delivree": "Dispensed"
+    }
+  },
+
+  "teleconsultation": {
+    "new": "New teleconsultation",
+    "join": "Join",
+    "start": "Start",
+    "end": "End",
+    "link": "Connection link",
+    "date_debut": "Date and time",
+    "motif": "Reason",
+    "patient_notified": "Patient has been notified",
+    "statuts": {
+      "planifiee": "Scheduled",
+      "en_cours": "In progress",
+      "terminee": "Ended",
+      "annulee": "Cancelled"
+    }
+  },
+
+  "message": {
+    "new": "New message",
+    "send": "Send",
+    "write": "Write a message...",
+    "no_conversation": "No conversations",
+    "select_contact": "Select a contact to start",
+    "attach_file": "Attach file",
+    "unread": "unread",
+    "unread_plural": "unread"
+  },
+
+  "notification": {
+    "title": "Notifications",
+    "mark_read": "Mark as read",
+    "mark_all_read": "Mark all as read",
+    "no_notification": "No notifications",
+    "unread_count": "{{count}} unread"
+  },
+
+  "errors": {
+    "required": "This field is required",
+    "email_invalid": "Invalid email address",
+    "password_min": "Password must be at least 8 characters",
+    "password_match": "Passwords do not match",
+    "network": "Network error. Check your connection.",
+    "not_found": "Resource not found",
+    "server": "Server error. Please try again later.",
+    "unauthorized": "You are not authorized to perform this action"
+  }
+}

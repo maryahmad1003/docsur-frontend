@@ -1,0 +1,200 @@
+{
+  "app_name": "DocSecur",
+
+  "auth": {
+    "login": "Connexion",
+    "register": "Inscription",
+    "logout": "Déconnexion",
+    "email": "Adresse email",
+    "password": "Mot de passe",
+    "confirm_password": "Confirmer le mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "connecting": "Connexion...",
+    "registering": "Inscription...",
+    "login_success": "Connexion réussie",
+    "logout_success": "Déconnexion réussie",
+    "invalid_credentials": "Identifiants incorrects",
+    "account_disabled": "Compte désactivé. Contactez l'administrateur."
+  },
+
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "patients": "Patients",
+    "consultations": "Consultations",
+    "prescriptions": "Prescriptions",
+    "rendez_vous": "Rendez-vous",
+    "teleconsultation": "Téléconsultation",
+    "resultats": "Résultats",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "profil": "Mon profil",
+    "dossier_medical": "Dossier médical",
+    "carnet_vaccination": "Carnet de vaccination",
+    "statistiques": "Statistiques",
+    "centres_sante": "Centres de santé",
+    "campagnes": "Campagnes",
+    "utilisateurs": "Utilisateurs",
+    "ordonnances": "Ordonnances",
+    "pharmacie": "Pharmacie",
+    "laboratoire": "Laboratoire",
+    "demandes_analyse": "Demandes d'analyse"
+  },
+
+  "common": {
+    "search": "Rechercher...",
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "export": "Exporter",
+    "see_more": "Voir plus",
+    "no_result": "Aucun résultat",
+    "loading": "Chargement...",
+    "send": "Envoyer",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "page": "Page",
+    "of": "sur",
+    "yes": "Oui",
+    "no": "Non",
+    "welcome": "Bienvenue",
+    "error": "Erreur",
+    "success": "Succès",
+    "created_at": "Créé le",
+    "updated_at": "Modifié le",
+    "actions": "Actions",
+    "status": "Statut",
+    "filter": "Filtrer",
+    "all": "Tous",
+    "per_page": "Par page",
+    "total": "Total",
+    "print": "Imprimer",
+    "download": "Télécharger",
+    "upload": "Téléverser"
+  },
+
+  "user": {
+    "nom": "Nom",
+    "prenom": "Prénom",
+    "telephone": "Téléphone",
+    "role": "Rôle",
+    "langue": "Langue",
+    "photo": "Photo de profil",
+    "est_actif": "Actif",
+    "created_at": "Inscrit le",
+    "roles": {
+      "medecin": "Médecin",
+      "patient": "Patient",
+      "administrateur": "Administrateur",
+      "pharmacien": "Pharmacien",
+      "laborantin": "Laborantin"
+    }
+  },
+
+  "patient": {
+    "num_dossier": "N° de dossier",
+    "date_naissance": "Date de naissance",
+    "sexe": "Sexe",
+    "groupe_sanguin": "Groupe sanguin",
+    "adresse": "Adresse",
+    "antecedents": "Antécédents médicaux",
+    "allergies": "Allergies connues",
+    "new": "Nouveau patient",
+    "list": "Liste des patients",
+    "detail": "Détail patient",
+    "historique": "Historique médical"
+  },
+
+  "consultation": {
+    "motif": "Motif de consultation",
+    "diagnostic": "Diagnostic",
+    "notes": "Notes",
+    "date": "Date",
+    "tension": "Tension artérielle",
+    "poids": "Poids (kg)",
+    "taille": "Taille (cm)",
+    "temperature": "Température (°C)",
+    "frequence_cardiaque": "Fréquence cardiaque",
+    "imc": "IMC",
+    "saturation": "Saturation O₂",
+    "urgence": "Niveau d'urgence",
+    "type": "Type de consultation",
+    "new": "Nouvelle consultation",
+    "list": "Consultations",
+    "urgence_levels": {
+      "faible": "Faible",
+      "moderate": "Modérée",
+      "urgent": "Urgent",
+      "critique": "Critique"
+    },
+    "types": {
+      "presentiel": "Présentiel",
+      "teleconsultation": "Téléconsultation"
+    }
+  },
+
+  "prescription": {
+    "medicaments": "Médicaments",
+    "posologie": "Posologie",
+    "duree": "Durée",
+    "date_emission": "Date d'émission",
+    "statut": "Statut",
+    "send_pharmacy": "Envoyer à la pharmacie",
+    "statuts": {
+      "en_attente": "En attente",
+      "envoyee": "Envoyée",
+      "delivree": "Délivrée"
+    }
+  },
+
+  "teleconsultation": {
+    "new": "Nouvelle téléconsultation",
+    "join": "Rejoindre",
+    "start": "Démarrer",
+    "end": "Terminer",
+    "link": "Lien de connexion",
+    "date_debut": "Date et heure",
+    "motif": "Motif",
+    "patient_notified": "Le patient a été notifié",
+    "statuts": {
+      "planifiee": "Planifiée",
+      "en_cours": "En cours",
+      "terminee": "Terminée",
+      "annulee": "Annulée"
+    }
+  },
+
+  "message": {
+    "new": "Nouveau message",
+    "send": "Envoyer",
+    "write": "Écrire un message...",
+    "no_conversation": "Aucune conversation",
+    "select_contact": "Sélectionnez un contact pour démarrer",
+    "attach_file": "Joindre un fichier",
+    "unread": "non lu",
+    "unread_plural": "non lus"
+  },
+
+  "notification": {
+    "title": "Notifications",
+    "mark_read": "Marquer comme lu",
+    "mark_all_read": "Tout marquer comme lu",
+    "no_notification": "Aucune notification",
+    "unread_count": "{{count}} non lue(s)"
+  },
+
+  "errors": {
+    "required": "Ce champ est obligatoire",
+    "email_invalid": "Adresse email invalide",
+    "password_min": "Le mot de passe doit contenir au moins 8 caractères",
+    "password_match": "Les mots de passe ne correspondent pas",
+    "network": "Erreur réseau. Vérifiez votre connexion.",
+    "not_found": "Ressource introuvable",
+    "server": "Erreur serveur. Réessayez plus tard.",
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action"
+  }
+}
