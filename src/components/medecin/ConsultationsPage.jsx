@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   FiClipboard, FiSearch, FiPlus, FiEye, FiEdit3, FiTrash2,
-  FiX, FiUser, FiCalendar, FiFileText
+  FiX, FiUser, FiCalendar, FiFileText, FiMic
 } from 'react-icons/fi';
 import { getConsultations, creerConsultation, supprimerConsultation, getPatients } from '../../api/medecinAPI';
 import { formatGeneratedRef, normalizeCollection, normalizeItem } from '../../utils/apiData';
+import VoiceInput from './VoiceInput';
 
 const STATUT_MAP = {
   planifiee: { label: 'Planifiée', color: '#38BDF8', bg: 'rgba(56,189,248,0.1)' },
@@ -301,12 +302,20 @@ export default function ConsultationsPage() {
               </div>
               <div style={{ marginBottom: 24 }}>
                 <label style={labelStyle}>Notes / Observations</label>
-                <textarea
-                  style={{ ...inputStyle, width: '100%', minHeight: 90, padding: '10px 14px', background: '#FFFFFF', border: '1px solid #D1D5DB', borderRadius: 10, resize: 'vertical', boxSizing: 'border-box' }}
-                  placeholder="Notes additionnelles…"
-                  value={form.notes}
-                  onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-                />
+                <div style={{ position: 'relative' }}>
+                  <textarea
+                    style={{ ...inputStyle, width: '100%', minHeight: 90, padding: '10px 14px', background: '#FFFFFF', border: '1px solid #D1D5DB', borderRadius: 10, resize: 'vertical', boxSizing: 'border-box' }}
+                    placeholder="Notes additionnelles…"
+                    value={form.notes}
+                    onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+                  />
+                  <div style={{ position: 'absolute', right: 10, bottom: 10 }}>
+                    <VoiceInput
+                      onTranscript={(text) => setForm(f => ({ ...f, notes: f.notes + ' ' + text }))}
+                      compact
+                    />
+                  </div>
+                </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
                 <button type="button" style={cancelBtn} onClick={() => setShowCreate(false)}>Annuler</button>

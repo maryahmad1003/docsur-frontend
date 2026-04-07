@@ -14,6 +14,8 @@ import ResultatsPatientPage        from '../components/patient/ResultatsPatientP
 import CarnetVaccinationPage       from '../components/patient/CarnetVaccinationPage';
 import TeleconsultationPatientPage from '../components/patient/TeleconsultationPatientPage';
 import SensibilisationPage         from '../components/patient/SensibilisationPage';
+import ConstantesVitalesPatientPage from '../components/patient/ConstantesVitalesPatientPage';
+import ChatbotWidget               from '../components/patient/ChatbotWidget';
 
 const normalizeCollection = (payload) => {
   if (Array.isArray(payload)) return payload;
@@ -263,8 +265,10 @@ const PatientDashboard = () => (
         <Route path="vaccination"         element={<CarnetVaccinationPage />} />
         <Route path="teleconsultations"   element={<TeleconsultationPatientPage />} />
         <Route path="sensibilisation"     element={<SensibilisationPage />} />
+        <Route path="constantes-vitales"  element={<ConstantesVitalesPatientPage />} />
       </Routes>
     </div>
+    <ChatbotWidget />
   </div>
 );
 

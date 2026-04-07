@@ -3,9 +3,9 @@
    Gestion du mode hors ligne avec cache et synchronisation
    ============================================================ */
 
-const CACHE_NAME    = 'docsecur-v1';
-const API_CACHE     = 'docsecur-api-v1';
-const STATIC_CACHE  = 'docsecur-static-v1';
+const CACHE_NAME    = 'docsecur-v2';
+const API_CACHE     = 'docsecur-api-v2';
+const STATIC_CACHE  = 'docsecur-static-v2';
 
 // Ressources statiques à mettre en cache à l'installation
 const STATIC_ASSETS = [
@@ -24,7 +24,14 @@ const CACHEABLE_API_ROUTES = [
   '/api/patient/vaccination',
   '/api/patient/rendez-vous',
   '/api/notifications',
+  '/api/medecin/patients',
+  '/api/admin/centres-sante',
+  '/api/admin/campagnes',
+  '/api/admin/statistiques',
 ];
+
+// Durée de cache API en millisecondes (5 minutes)
+const API_CACHE_DURATION = 5 * 60 * 1000;
 
 // ─── Installation ────────────────────────────────────────────
 self.addEventListener('install', (event) => {
@@ -74,9 +81,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Routes API : Network First avec fallback cache
+  // Routes API : Stale While Revalidate (-cache+async update)
   if (isCacheableApiRoute(url)) {
-    event.respondWith(networkFirstWithCache(request, API_CACHE));
+    event.respondWith(staleWhileRevalidate(request, API_CACHE));
     return;
   }
 
@@ -108,27 +115,32 @@ async function cacheFirst(request, cacheName) {
   }
 }
 
-// ─── Stratégie : Network First avec fallback cache ───────────
-async function networkFirstWithCache(request, cacheName) {
-  try {
-    const response = await fetch(request);
+// ─── Stratégie : Stale While Revalidate (Cache First + mise à jour async) ─
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cachedResponse = await cache.match(request);
+  
+  const fetchPromise = fetch(request).then((response) => {
     if (response.ok) {
-      const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
     }
     return response;
-  } catch {
-    const cached = await caches.match(request);
-    if (cached) {
-      console.log('[DocSecur SW] Hors ligne — retour du cache pour', request.url);
-      return cached;
-    }
-    // Réponse JSON vide indiquant le mode hors ligne
-    return new Response(
-      JSON.stringify({ offline: true, message: 'Données en cache non disponibles.' }),
-      { status: 503, headers: { 'Content-Type': 'application/json' } }
-    );
+  }).catch(() => null);
+  
+  if (cachedResponse) {
+    fetchPromise.then(() => {
+      console.log('[DocSecur SW] Mise à jour cache arrière-plan:', request.url);
+    }).catch(() => {});
+    return cachedResponse;
   }
+  
+  const networkResponse = await fetchPromise;
+  if (networkResponse) return networkResponse;
+  
+  return new Response(
+    JSON.stringify({ offline: true, message: 'Données non disponibles.' }),
+    { status: 503, headers: { 'Content-Type': 'application/json' } }
+  );
 }
 
 // ─── File d'attente hors ligne (Background Sync) ─────────────

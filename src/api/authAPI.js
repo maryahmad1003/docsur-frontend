@@ -6,3 +6,5 @@ export const logout = () => API.post('/logout');
 export const getProfil = () => API.get('/profil');
 export const updateProfil = (data) => API.put('/profil', data);
 export const changerLangue = (data) => API.post('/changer-langue', data);
+export const sendOtp = (data) => API.post('/auth/send-otp', data);
+export const verifyOtp = (data) => API.post('/auth/verify-otp', data);

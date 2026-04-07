@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../../api/authAPI';
+import { login, sendOtp, verifyOtp } from '../../api/authAPI';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { FiMail, FiLock, FiArrowRight, FiShield, FiPhone, FiKey, FiUser } from 'react-icons/fi';
-
-/* Simule l'envoi d'un OTP (demo) */
-const simulateOtp = () => String(Math.floor(100000 + Math.random() * 900000));
 
 const LoginForm = () => {
   const [activeTab, setActiveTab]     = useState('pro');   // 'pro' | 'patient'
@@ -15,9 +12,9 @@ const LoginForm = () => {
   const [password, setPassword]       = useState('');
   const [phone, setPhone]             = useState('');
   const [otp, setOtp]                 = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState(null);
   const [otpSent, setOtpSent]         = useState(false);
   const [loading, setLoading]         = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState(null);
 
   const { loginUser } = useAuth();
   const navigate = useNavigate();
@@ -40,23 +37,33 @@ const LoginForm = () => {
   };
 
   /* ── Envoi OTP patient ── */
-  const handleSendOtp = (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     if (!phone.trim()) { toast.error('Saisissez votre numéro de téléphone'); return; }
-    const code = simulateOtp();
-    setGeneratedOtp(code);
-    setOtpSent(true);
-    toast.info(`📱 Code OTP (démo) : ${code}`, { autoClose: 15000 });
+    setLoading(true);
+    try {
+      await sendOtp({ telephone: phone });
+      setOtpSent(true);
+      toast.success('Code OTP envoyé par SMS!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Erreur lors de l\'envoi du code OTP');
+    }
+    setLoading(false);
   };
 
   /* ── Vérification OTP ── */
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    if (otp !== generatedOtp) {
-      toast.error('Code OTP incorrect. Réessayez.');
-      return;
+    setLoading(true);
+    try {
+      const res = await verifyOtp({ telephone: phone, code: otp });
+      loginUser(res.data.user, res.data.token);
+      toast.success(res.data.message || 'Connexion réussie');
+      navigate('/patient');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Code OTP incorrect');
     }
-    toast.error('Connexion OTP non disponible — utilisez email + mot de passe.');
+    setLoading(false);
   };
 
   return (

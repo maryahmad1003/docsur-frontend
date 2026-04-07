@@ -41,10 +41,11 @@ const Sidebar = () => {
     { to: '/patient/dossier',           icon: <FiFileText />,  label: t('nav.dossier_medical') },
     { to: '/patient/rendez-vous',       icon: <FiCalendar />,  label: t('nav.rendez_vous') },
     { to: '/patient/prescriptions',     icon: <FiClipboard />, label: t('nav.prescriptions') },
-    { to: '/patient/resultats',         icon: <FiActivity />,  label: t('nav.resultats') },
-    { to: '/patient/sensibilisation',   icon: <FiBookOpen />,  label: 'Sensibilisation' },
-    { to: '/patient/vaccination',       icon: <FiPackage />,   label: t('nav.carnet_vaccination') },
+    { to: '/patient/resultats',        icon: <FiActivity />,  label: t('nav.resultats') },
+    { to: '/patient/sensibilisation',  icon: <FiBookOpen />,  label: 'Sensibilisation' },
+    { to: '/patient/vaccination',      icon: <FiPackage />,   label: t('nav.carnet_vaccination') },
     { to: '/patient/teleconsultations', icon: <FiVideo />,     label: t('nav.teleconsultation') },
+    { to: '/patient/constantes-vitales', icon: <FiHeart />,   label: 'Constantes Vitales' },
   ];
 
   const adminLinks = [

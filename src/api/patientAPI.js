@@ -8,6 +8,11 @@ export const getCarnetVaccination = () => API.get('/patient/vaccination');
 export const getVaccins = () => API.get('/patient/vaccination/vaccins');
 export const getMonQRCode = () => API.get('/patient/qrcode');
 
+// Constantes vitales (IoT)
+export const getMesConstantesVitales = (params) => API.get('/patient/constantes-vitales', { params });
+export const getLatestConstantes = (types) => API.get('/patient/constantes-vitales/latest', { params: { types } });
+export const getHistoriqueConstantes = (params) => API.get('/patient/constantes-vitales/historique', { params });
+
 // Rendez-vous
 export const getMesRendezVous = () => API.get('/patient/rendez-vous');
 export const prendreRendezVous = (data) => API.post('/patient/rendez-vous', data);
