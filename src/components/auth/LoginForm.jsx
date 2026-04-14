@@ -1,20 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login, sendOtp, verifyOtp } from '../../api/authAPI';
+import { login } from '../../api/authAPI';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { FiMail, FiLock, FiArrowRight, FiShield, FiPhone, FiKey, FiUser } from 'react-icons/fi';
+import { FiMail, FiLock, FiArrowRight, FiShield } from 'react-icons/fi';
 
 const LoginForm = () => {
-  const [activeTab, setActiveTab]     = useState('pro');   // 'pro' | 'patient'
   const [email, setEmail]             = useState('');
   const [password, setPassword]       = useState('');
-  const [phone, setPhone]             = useState('');
-  const [otp, setOtp]                 = useState('');
-  const [otpSent, setOtpSent]         = useState(false);
   const [loading, setLoading]         = useState(false);
-  const [generatedOtp, setGeneratedOtp] = useState(null);
 
   const { loginUser } = useAuth();
   const navigate = useNavigate();
@@ -36,35 +31,6 @@ const LoginForm = () => {
     setLoading(false);
   };
 
-  /* ── Envoi OTP patient ── */
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-    if (!phone.trim()) { toast.error('Saisissez votre numéro de téléphone'); return; }
-    setLoading(true);
-    try {
-      await sendOtp({ telephone: phone });
-      setOtpSent(true);
-      toast.success('Code OTP envoyé par SMS!');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Erreur lors de l\'envoi du code OTP');
-    }
-    setLoading(false);
-  };
-
-  /* ── Vérification OTP ── */
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await verifyOtp({ telephone: phone, code: otp });
-      loginUser(res.data.user, res.data.token);
-      toast.success(res.data.message || 'Connexion réussie');
-      navigate('/patient');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Code OTP incorrect');
-    }
-    setLoading(false);
-  };
 
   return (
     <div style={pageStyle}>
@@ -117,135 +83,45 @@ const LoginForm = () => {
             <h2 style={formTitleStyle}>Connexion</h2>
             <p style={formSubStyle}>Bienvenue sur DocSecur</p>
 
-            {/* Onglets */}
-            <div style={tabsStyle}>
-              <button
-                style={activeTab === 'pro' ? { ...tabBtnStyle, ...tabActivStyle } : tabBtnStyle}
-                onClick={() => setActiveTab('pro')}
-              >
-                <FiUser size={14} /> Professionnel
-              </button>
-              <button
-                style={activeTab === 'patient' ? { ...tabBtnStyle, ...tabActivStyle } : tabBtnStyle}
-                onClick={() => setActiveTab('patient')}
-              >
-                <FiPhone size={14} /> Patient
-              </button>
-            </div>
-
-            {/* ── Formulaire Professionnel ── */}
-            {activeTab === 'pro' && (
-              <form onSubmit={handleProLogin} style={{ marginTop: 24 }}>
-                <div style={fieldGroupStyle}>
-                  <label style={labelStyle}>Adresse email</label>
-                  <div style={inputWrapperStyle}>
-                    <FiMail size={15} style={inputIconStyle} />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="exemple@docsecur.sn"
-                      required
-                      style={inputStyle}
-                      onFocus={(e) => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.12)'; }}
-                      onBlur={(e)  => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
-                    />
-                  </div>
+            <form onSubmit={handleProLogin} style={{ marginTop: 24 }}>
+              <div style={fieldGroupStyle}>
+                <label style={labelStyle}>Adresse email</label>
+                <div style={inputWrapperStyle}>
+                  <FiMail size={15} style={inputIconStyle} />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="exemple@docsecur.sn"
+                    required
+                    style={inputStyle}
+                    onFocus={(e) => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.12)'; }}
+                    onBlur={(e)  => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
+                  />
                 </div>
-
-                <div style={fieldGroupStyle}>
-                  <label style={labelStyle}>Mot de passe</label>
-                  <div style={inputWrapperStyle}>
-                    <FiLock size={15} style={inputIconStyle} />
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••"
-                      required
-                      style={inputStyle}
-                      onFocus={(e) => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.12)'; }}
-                      onBlur={(e)  => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
-                    />
-                  </div>
-                </div>
-
-                <button type="submit" disabled={loading} style={loading ? { ...submitBtnStyle, opacity: 0.7, cursor: 'not-allowed' } : submitBtnStyle}>
-                  {loading ? <><span style={spinnerStyle} /> Connexion…</> : <>Se connecter <FiArrowRight /></>}
-                </button>
-              </form>
-            )}
-
-            {/* ── Formulaire Patient (OTP) ── */}
-            {activeTab === 'patient' && (
-              <div style={{ marginTop: 24 }}>
-                {!otpSent ? (
-                  <form onSubmit={handleSendOtp}>
-                    <div style={infoBannerStyle}>
-                      <FiPhone size={14} color="#2563EB" />
-                      <span style={{ fontSize: 13, color: '#1D4ED8' }}>
-                        Connectez-vous avec votre numéro de téléphone
-                      </span>
-                    </div>
-                    <div style={fieldGroupStyle}>
-                      <label style={labelStyle}>Numéro de téléphone</label>
-                      <div style={inputWrapperStyle}>
-                        <FiPhone size={15} style={inputIconStyle} />
-                        <input
-                          type="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="+221 77 000 0000"
-                          required
-                          style={inputStyle}
-                          onFocus={(e) => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.12)'; }}
-                          onBlur={(e)  => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
-                        />
-                      </div>
-                    </div>
-                    <button type="submit" style={submitBtnStyle}>
-                      Envoyer le code OTP <FiArrowRight />
-                    </button>
-                  </form>
-                ) : (
-                  <form onSubmit={handleVerifyOtp}>
-                    <div style={{ ...infoBannerStyle, background: '#F0FDF4', borderColor: '#BBF7D0' }}>
-                      <FiKey size={14} color="#16A34A" />
-                      <span style={{ fontSize: 13, color: '#15803D' }}>
-                        Code envoyé au {phone} (vérifiez la notification toast)
-                      </span>
-                    </div>
-                    <div style={fieldGroupStyle}>
-                      <label style={labelStyle}>Code OTP à 6 chiffres</label>
-                      <div style={inputWrapperStyle}>
-                        <FiKey size={15} style={inputIconStyle} />
-                        <input
-                          type="text"
-                          value={otp}
-                          onChange={(e) => setOtp(e.target.value)}
-                          placeholder="123456"
-                          maxLength={6}
-                          required
-                          style={{ ...inputStyle, letterSpacing: 6, fontSize: 20, textAlign: 'center' }}
-                          onFocus={(e) => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.12)'; }}
-                          onBlur={(e)  => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
-                        />
-                      </div>
-                    </div>
-                    <button type="submit" style={submitBtnStyle}>
-                      Vérifier le code <FiArrowRight />
-                    </button>
-                    <button
-                      type="button"
-                      style={{ ...submitBtnStyle, background: '#F9FAFB', color: '#6B7280', border: '1px solid #E5E7EB', boxShadow: 'none', marginTop: 8 }}
-                      onClick={() => setOtpSent(false)}
-                    >
-                      Changer le numéro
-                    </button>
-                  </form>
-                )}
               </div>
-            )}
+
+              <div style={fieldGroupStyle}>
+                <label style={labelStyle}>Mot de passe</label>
+                <div style={inputWrapperStyle}>
+                  <FiLock size={15} style={inputIconStyle} />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••••"
+                    required
+                    style={inputStyle}
+                    onFocus={(e) => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.12)'; }}
+                    onBlur={(e)  => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none'; }}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" disabled={loading} style={loading ? { ...submitBtnStyle, opacity: 0.7, cursor: 'not-allowed' } : submitBtnStyle}>
+                {loading ? <><span style={spinnerStyle} /> Connexion…</> : <>Se connecter <FiArrowRight /></>}
+              </button>
+            </form>
 
             <p style={switchTextStyle}>
               Pas encore de compte ?{' '}
@@ -401,40 +277,6 @@ const formSubStyle = {
   marginBottom: 0,
 };
 
-const tabsStyle = {
-  display: 'flex',
-  gap: 6,
-  background: '#F9FAFB',
-  border: '1px solid #E5E7EB',
-  borderRadius: 10,
-  padding: 4,
-  marginTop: 20,
-};
-
-const tabBtnStyle = {
-  flex: 1,
-  padding: '8px 12px',
-  borderRadius: 7,
-  border: 'none',
-  background: 'transparent',
-  fontSize: 13,
-  fontWeight: 500,
-  color: '#6B7280',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: 6,
-  transition: 'all 0.15s ease',
-};
-
-const tabActivStyle = {
-  background: '#fff',
-  color: '#16A34A',
-  fontWeight: 700,
-  boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-};
-
 const fieldGroupStyle = {
   marginBottom: 16,
 };
@@ -502,18 +344,6 @@ const spinnerStyle = {
   borderRadius: '50%',
   animation: 'spin 0.7s linear infinite',
 };
-
-const infoBannerStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-  padding: '10px 14px',
-  background: '#EFF6FF',
-  borderRadius: 8,
-  border: '1px solid #BFDBFE',
-  marginBottom: 16,
-};
-
 
 const switchTextStyle = {
   textAlign: 'center',

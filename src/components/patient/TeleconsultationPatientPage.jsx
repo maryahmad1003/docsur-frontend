@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { FiVideo, FiVideoOff, FiMic, FiMicOff, FiPhone, FiCalendar, FiUser, FiClock, FiMonitor } from 'react-icons/fi';
+import { getMesTeleconsultations } from '../../api/patientAPI';
+
+const normalizeCollection = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.data?.data)) return payload.data.data;
+  return [];
+};
 
 /**
  * Page téléconsultation patient — intégration Jitsi Meet (WebRTC)
@@ -13,22 +21,27 @@ const TeleconsultationPatientPage = () => {
   const jitsiContainerRef             = useRef(null);
   const jitsiApiRef                   = useRef(null);
 
-  // Demo sessions
   useEffect(() => {
-    setSessions([
-      {
-        id: 1, medecin: 'Dr. Ndiaye Moussa', specialite: 'Médecine Générale',
-        date_heure: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-        statut: 'planifie', motif: 'Suivi traitement hypertension', duree: 30,
-        room_id: 'docsecur-room-demo-001',
-      },
-      {
-        id: 2, medecin: 'Dr. Diallo Aminata', specialite: 'Cardiologie',
-        date_heure: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        statut: 'termine', motif: 'Consultation cardiologique', duree: 45,
-        room_id: 'docsecur-room-demo-002',
-      },
-    ]);
+    getMesTeleconsultations()
+      .then((res) => {
+        const items = normalizeCollection(res);
+        setSessions(items.map((item) => ({
+          id: item.id,
+          medecin: item.medecin?.user ? `Dr. ${item.medecin.user.prenom} ${item.medecin.user.nom}` : 'Médecin DocSecur',
+          specialite: item.medecin?.specialite || 'Téléconsultation',
+          date_heure: item.date_debut,
+          statut: item.statut === 'planifiee' ? 'planifie' : item.statut === 'terminee' ? 'termine' : item.statut,
+          motif: item.consultation?.motif || 'Téléconsultation planifiée',
+          duree: item.date_debut && item.date_fin
+            ? Math.max(1, Math.round((new Date(item.date_fin) - new Date(item.date_debut)) / (1000 * 60)))
+            : null,
+          room_id: item.lien_video ? item.lien_video.split('/').pop() : null,
+          lien_video: item.lien_video,
+        })));
+      })
+      .catch(() => {
+        setSessions([]);
+      });
   }, []);
 
   /* ── Rejoindre une session Jitsi Meet ── */

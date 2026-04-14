@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import API from './axiosConfig';
+import API from '../api/axiosConfig';
 
 const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
 

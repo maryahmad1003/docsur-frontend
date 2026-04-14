@@ -3,9 +3,18 @@ import API from '../api/axiosConfig';
 
 /**
  * Hook pour la messagerie — conversations + messages temps réel
- * @param {number} pollInterval - polling en ms (défaut 10s)
+ * @param {Object} options
+ * @param {number} options.pollInterval - polling en ms (défaut 10s)
+ * @param {boolean} options.enablePolling - active le polling si true
+ * @param {number} options.perPage - taille de page pour les conversations
  */
-export function useMessages(pollInterval = 10000) {
+export function useMessages(options = {}) {
+  const {
+    pollInterval = 10000,
+    enablePolling = false,
+    perPage = 20,
+  } = options;
+
   const [conversations, setConversations]   = useState([]);
   const [totalNonLus, setTotalNonLus]       = useState(0);
   const [loadingConvs, setLoadingConvs]     = useState(false);
@@ -13,19 +22,25 @@ export function useMessages(pollInterval = 10000) {
 
   const fetchConversations = useCallback(async () => {
     try {
-      const res = await API.get('/messages/conversations');
-      const data = res.data ?? [];
+      const res = await API.get('/messages/conversations', { params: { per_page: perPage } });
+      const payload = res.data ?? {};
+      const data = payload.data ?? payload ?? [];
       setConversations(Array.isArray(data) ? data : []);
       setTotalNonLus(Array.isArray(data) ? data.reduce((s, c) => s + (c.non_lus || 0), 0) : 0);
     } catch {}
-  }, []);
+  }, [perPage]);
 
   useEffect(() => {
     setLoadingConvs(true);
     fetchConversations().finally(() => setLoadingConvs(false));
+
+    if (!enablePolling) {
+      return undefined;
+    }
+
     intervalRef.current = setInterval(fetchConversations, pollInterval);
     return () => clearInterval(intervalRef.current);
-  }, [fetchConversations, pollInterval]);
+  }, [enablePolling, fetchConversations, pollInterval]);
 
   return { conversations, totalNonLus, loadingConvs, refreshConversations: fetchConversations };
 }
@@ -33,9 +48,18 @@ export function useMessages(pollInterval = 10000) {
 /**
  * Hook pour les messages d'une conversation spécifique
  * @param {number|null} userId - ID de l'interlocuteur
- * @param {number} pollInterval - polling en ms
+ * @param {Object} options
+ * @param {number} options.pollInterval - polling en ms
+ * @param {boolean} options.enablePolling - active le polling si true
+ * @param {number} options.perPage - taille de page des messages
  */
-export function useConversation(userId, pollInterval = 5000) {
+export function useConversation(userId, options = {}) {
+  const {
+    pollInterval = 5000,
+    enablePolling = false,
+    perPage = 50,
+  } = options;
+
   const [messages, setMessages]   = useState([]);
   const [loading, setLoading]     = useState(false);
   const [sending, setSending]     = useState(false);
@@ -47,7 +71,7 @@ export function useConversation(userId, pollInterval = 5000) {
     if (!userId) return;
     if (p === 1) setLoading(true);
     try {
-      const res = await API.get(`/messages/${userId}`, { params: { page: p, per_page: 50 } });
+      const res = await API.get(`/messages/${userId}`, { params: { page: p, per_page: perPage } });
       const data = res.data;
       const items = data.data ?? data;
       if (p === 1) {
@@ -59,16 +83,21 @@ export function useConversation(userId, pollInterval = 5000) {
     } catch {} finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [perPage, userId]);
 
   useEffect(() => {
     if (!userId) return;
     setMessages([]);
     setPage(1);
     fetchMessages(1);
+
+    if (!enablePolling) {
+      return undefined;
+    }
+
     intervalRef.current = setInterval(() => fetchMessages(1), pollInterval);
     return () => clearInterval(intervalRef.current);
-  }, [userId, fetchMessages, pollInterval]);
+  }, [userId, fetchMessages, pollInterval, enablePolling]);
 
   const sendMessage = useCallback(async (contenu, fichier = null) => {
     if (!userId || (!contenu?.trim() && !fichier)) return;

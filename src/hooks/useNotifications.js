@@ -3,9 +3,16 @@ import API from '../api/axiosConfig';
 
 /**
  * Hook pour gérer les notifications en temps réel (polling)
- * @param {number} pollInterval - intervalle de polling en ms (défaut 30s)
+ * @param {Object} options
+ * @param {number} options.pollInterval - intervalle de polling en ms (défaut 30s)
+ * @param {boolean} options.enablePolling - active le polling si true
  */
-export function useNotifications(pollInterval = 30000) {
+export function useNotifications(options = {}) {
+  const {
+    pollInterval = 30000,
+    enablePolling = false,
+  } = options;
+
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount]     = useState(0);
   const [loading, setLoading]             = useState(false);
@@ -27,9 +34,13 @@ export function useNotifications(pollInterval = 30000) {
     setLoading(true);
     fetchNotifications().finally(() => setLoading(false));
 
+    if (!enablePolling) {
+      return undefined;
+    }
+
     intervalRef.current = setInterval(fetchNotifications, pollInterval);
     return () => clearInterval(intervalRef.current);
-  }, [fetchNotifications, pollInterval]);
+  }, [enablePolling, fetchNotifications, pollInterval]);
 
   const markAsRead = useCallback(async (id) => {
     try {

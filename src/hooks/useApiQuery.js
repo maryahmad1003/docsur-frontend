@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { QueryClient, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
   defaultOptions: {

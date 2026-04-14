@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { FiSearch, FiSend, FiPaperclip, FiUser, FiX, FiMessageCircle, FiAlertCircle } from 'react-icons/fi';
+import { FiSearch, FiSend, FiPaperclip, FiX, FiMessageCircle, FiAlertCircle, FiRefreshCw } from 'react-icons/fi';
 import { getConversations, getContacts, getMessages, sendMessage } from '../../api/messagesAPI';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -41,30 +41,54 @@ export default function MessagesPage() {
   const [loading, setLoading]             = useState(false);
   const [showContacts, setShowContacts]   = useState(false);
   const [error, setError]                 = useState('');
+  const [convPage, setConvPage]           = useState(1);
+  const [convHasMore, setConvHasMore]     = useState(false);
+  const [contactsPage, setContactsPage]   = useState(1);
+  const [contactsHasMore, setContactsHasMore] = useState(false);
+  const [messagesPage, setMessagesPage]   = useState(1);
+  const [messagesHasMore, setMessagesHasMore] = useState(false);
+  const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const messagesEndRef                    = useRef(null);
-  const pollRef                           = useRef(null);
   const fileInputRef                      = useRef(null);
 
   // ── Load conversations ──
-  const loadConversations = useCallback(async () => {
+  const loadConversations = useCallback(async (page = 1, append = false) => {
     try {
-      const res = await getConversations();
-      setConversations(res.data ?? []);
+      const res = await getConversations({ page, per_page: 20 });
+      const payload = res.data ?? {};
+      const data = payload.data ?? payload ?? [];
+      setConversations(prev => append ? [...prev, ...(Array.isArray(data) ? data : [])] : (Array.isArray(data) ? data : []));
+      setConvHasMore((payload.current_page ?? 1) < (payload.last_page ?? 1));
+      setConvPage(payload.current_page ?? page);
+    } catch {}
+  }, []);
+
+  const loadContacts = useCallback(async (page = 1, append = false) => {
+    try {
+      const res = await getContacts({ page, per_page: 30 });
+      const payload = res.data ?? {};
+      const data = payload.data ?? payload ?? [];
+      setContacts(prev => append ? [...prev, ...(Array.isArray(data) ? data : [])] : (Array.isArray(data) ? data : []));
+      setContactsHasMore((payload.current_page ?? 1) < (payload.last_page ?? 1));
+      setContactsPage(payload.current_page ?? page);
     } catch {}
   }, []);
 
   useEffect(() => {
-    loadConversations();
-    getContacts().then(res => setContacts(res.data ?? [])).catch(() => {});
-  }, [loadConversations]);
+    loadConversations(1, false);
+    loadContacts(1, false);
+  }, [loadConversations, loadContacts]);
 
   // ── Load messages for active conversation ──
-  const loadMessages = useCallback(async () => {
+  const loadMessages = useCallback(async (page = 1, append = false) => {
     if (!activeUser) return;
     try {
-      const res = await getMessages(activeUser.id);
+      const res = await getMessages(activeUser.id, { page, per_page: 50 });
       const data = res.data;
-      setMessages(data.data ?? data ?? []);
+      const items = data.data ?? data ?? [];
+      setMessages(prev => append ? [...(Array.isArray(items) ? items : []), ...prev] : (Array.isArray(items) ? items : []));
+      setMessagesHasMore((data.current_page ?? 1) < (data.last_page ?? 1));
+      setMessagesPage(data.current_page ?? page);
     } catch {}
   }, [activeUser]);
 
@@ -72,11 +96,17 @@ export default function MessagesPage() {
     if (!activeUser) return;
     setLoading(true);
     setMessages([]);
-    loadMessages().finally(() => setLoading(false));
-    // Polling toutes les 5 secondes
-    pollRef.current = setInterval(loadMessages, 5000);
-    return () => clearInterval(pollRef.current);
+    setMessagesPage(1);
+    loadMessages(1, false).finally(() => setLoading(false));
   }, [activeUser, loadMessages]);
+
+  const loadOlderMessages = async () => {
+    if (!activeUser || !messagesHasMore || loadingMoreMessages) return;
+    setLoadingMoreMessages(true);
+    const nextPage = messagesPage + 1;
+    await loadMessages(nextPage, true);
+    setLoadingMoreMessages(false);
+  };
 
   // ── Auto-scroll ──
   useEffect(() => {
@@ -99,7 +129,7 @@ export default function MessagesPage() {
       setMessages(prev => [...prev, res.data]);
       setText('');
       setFichier(null);
-      loadConversations();
+      loadConversations(1, false);
     } catch {
       setError('Erreur lors de l\'envoi. Réessayez.');
     } finally {
@@ -128,8 +158,6 @@ export default function MessagesPage() {
       || c.prenom.toLowerCase().includes(q)
       || ROLE_LABELS[c.role]?.toLowerCase().includes(q);
   });
-
-  const myId = null; // On utilise la direction du message pour déterminer "moi"
 
   return (
     <div style={styles.page}>
@@ -172,6 +200,11 @@ export default function MessagesPage() {
                   </div>
                 </button>
               ))}
+              {contactsHasMore && (
+                <button style={styles.loadMoreBtn} onClick={() => loadContacts(contactsPage + 1, true)}>
+                  Charger plus de contacts
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -222,6 +255,11 @@ export default function MessagesPage() {
                   </div>
                 </button>
               ))}
+              {convHasMore && (
+                <button style={styles.loadMoreBtn} onClick={() => loadConversations(convPage + 1, true)}>
+                  Charger plus de conversations
+                </button>
+              )}
             </div>
           </>
         )}
@@ -249,10 +287,18 @@ export default function MessagesPage() {
                   <div style={{ ...styles.roleBadge, color: ROLE_COLORS[activeUser.role] }}>{ROLE_LABELS[activeUser.role]}</div>
                 </div>
               </div>
+              <button style={styles.refreshBtn} onClick={() => loadMessages(1, false)} title="Rafraîchir les messages">
+                <FiRefreshCw size={14} />
+              </button>
             </div>
 
             {/* Messages */}
             <div style={styles.messagesList}>
+              {messagesHasMore && (
+                <button style={styles.loadMoreBtn} onClick={loadOlderMessages} disabled={loadingMoreMessages}>
+                  {loadingMoreMessages ? 'Chargement...' : 'Charger les anciens messages'}
+                </button>
+              )}
               {loading && (
                 <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: 20, fontSize: 13 }}>
                   Chargement...
@@ -442,9 +488,34 @@ const styles = {
   chatHeader: {
     padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)',
     background: 'rgba(255,255,255,0.02)', flexShrink: 0,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   },
   chatHeaderName: { fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: 16 },
   messagesList: { flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 6 },
+  loadMoreBtn: {
+    alignSelf: 'center',
+    margin: '8px 0',
+    border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: 10,
+    background: 'rgba(255,255,255,0.04)',
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+    padding: '8px 12px',
+    cursor: 'pointer',
+  },
+  refreshBtn: {
+    border: '1px solid rgba(255,255,255,0.12)',
+    background: 'rgba(255,255,255,0.04)',
+    color: 'rgba(255,255,255,0.75)',
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    flexShrink: 0,
+  },
   messageRow: { display: 'flex', alignItems: 'flex-end', gap: 8 },
   bubble: { padding: '10px 14px', borderRadius: 16, fontSize: 14, lineHeight: 1.5, wordBreak: 'break-word' },
   bubbleSent: {

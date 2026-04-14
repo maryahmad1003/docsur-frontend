@@ -1,70 +1,83 @@
-# Getting Started with Create React App
+# DocSecur Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Interface React/Vite du projet `DocSecur`.
 
-## Available Scripts
+## Modules disponibles
 
-In the project directory, you can run:
+- Authentification et routage par rôle
+- Dashboard administrateur
+- Dashboard médecin
+- Dashboard patient
+- Dashboard pharmacien
+- Dashboard laborantin
+- Téléconsultation avec intégration Jitsi
+- Messagerie, notifications et profil
+- Multilingue `fr`, `en`, `wo`
+- PWA / service worker
 
-### `npm start`
+## Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React 19
+- Vite 7
+- React Router
+- Axios
+- React Query
+- Tailwind CSS
+- i18next
+- Recharts
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+```bash
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Lancement local
 
-### `npm run build`
+```bash
+npm run dev
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Build production :
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm run build
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Configuration
 
-### `npm run eject`
+Le frontend consomme l'API via :
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```txt
+VITE_API_URL=http://localhost:8000/api
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+À définir dans un fichier `.env` frontend si nécessaire.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Organisation rapide
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- `src/api/` : appels HTTP par domaine
+- `src/components/` : écrans métier
+- `src/pages/` : dashboards
+- `src/context/` : auth et cache
+- `src/hooks/` : hooks réutilisables
+- `src/locales/` : traductions
 
-## Learn More
+## Vérifications utiles
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Points validés :
 
-### Code Splitting
+- compilation TypeScript
+- build Vite
+- intégration des routes par rôle
+- pages pharmacien, laborantin, patient et téléconsultation raccordées à l'API
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Remarques soutenance
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Les téléconsultations patient utilisent maintenant les données API au lieu d'une liste de démonstration en dur.
+- Le dashboard laborantin affiche désormais des statistiques et demandes réelles.
+- Le bundle reste volumineux en production ; une optimisation par code splitting pourra être faite après la soutenance.

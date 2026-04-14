@@ -1,11 +1,14 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import Sidebar from '../components/common/Sidebar';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/common/LanguageSwitcher';
+import { useEffect, useState } from 'react';
 import { FiActivity, FiClipboard, FiCheckSquare, FiClock, FiBarChart2 } from 'react-icons/fi';
 import DemandesPage from '../components/laborantin/DemandesPage';
 import ResultatsPage from '../components/laborantin/ResultatsPage';
+import { getDemandes, getResultats } from '../api/laborantinAPI';
+import { normalizeCollection } from '../utils/apiData';
 
 const getGreeting = () => {
   const h = new Date().getHours();
@@ -17,6 +20,30 @@ const getGreeting = () => {
 const DashboardHome = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const [stats, setStats] = useState({
+    demandes: 0,
+    enCours: 0,
+    resultats: 0,
+    urgences: 0,
+    recentes: [],
+  });
+
+  useEffect(() => {
+    Promise.all([getDemandes(), getResultats()])
+      .then(([demandesRes, resultatsRes]) => {
+        const demandes = normalizeCollection(demandesRes);
+        const resultats = normalizeCollection(resultatsRes);
+
+        setStats({
+          demandes: demandes.length,
+          enCours: demandes.filter((item) => item.statut === 'en_cours').length,
+          resultats: resultats.length,
+          urgences: demandes.filter((item) => item.urgence || item.priorite === 'urgente').length,
+          recentes: demandes.slice(0, 4),
+        });
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div style={{ animation: 'fadeIn 0.4s ease' }}>
@@ -33,10 +60,10 @@ const DashboardHome = () => {
 
       <div className="stats-grid">
         {[
-          { icon: <FiClipboard size={22} />,   label: "Demandes d'analyses", value: '—', color: '#FBBF24', delay: 0,   sub: 'demandes reçues' },
-          { icon: <FiClock size={22} />,        label: 'En cours',            value: '—', color: '#38BDF8', delay: 80,  sub: 'analyses en cours' },
-          { icon: <FiCheckSquare size={22} />, label: t('resultats'),         value: '—', color: '#0ED2A0', delay: 160, sub: 'résultats envoyés' },
-          { icon: <FiActivity size={22} />,     label: 'Urgences',            value: '—', color: '#F87171', delay: 240, sub: 'priorité haute' },
+          { icon: <FiClipboard size={22} />,   label: "Demandes d'analyses", value: stats.demandes, color: '#FBBF24', delay: 0,   sub: 'demandes reçues' },
+          { icon: <FiClock size={22} />,        label: 'En cours',            value: stats.enCours, color: '#38BDF8', delay: 80,  sub: 'analyses en cours' },
+          { icon: <FiCheckSquare size={22} />, label: t('resultats'),         value: stats.resultats, color: '#0ED2A0', delay: 160, sub: 'résultats saisis' },
+          { icon: <FiActivity size={22} />,     label: 'Urgences',            value: stats.urgences, color: '#F87171', delay: 240, sub: 'priorité haute' },
         ].map((s, i) => (
           <div key={i} className="stat-card" style={{ animation: `slideUp 0.5s ease ${s.delay}ms both` }}>
             <div className="stat-icon" style={{ background: `${s.color}18`, border: `1px solid ${s.color}28` }}>
@@ -56,12 +83,36 @@ const DashboardHome = () => {
             <FiClipboard color="#FBBF24" size={16} />
             <span style={panelTitleStyle}>Demandes récentes</span>
           </div>
-          <div style={emptyState}>
-            <div style={{ fontSize: 36, marginBottom: 10 }}>🔬</div>
-            <div style={{ fontSize: 13, color: 'rgba(238,244,255,0.35)', textAlign: 'center' }}>
-              Aucune demande d'analyse<br />en attente
+          {stats.recentes.length === 0 ? (
+            <div style={emptyState}>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>🔬</div>
+              <div style={{ fontSize: 13, color: 'rgba(238,244,255,0.35)', textAlign: 'center' }}>
+                Aucune demande d'analyse<br />disponible
+              </div>
             </div>
-          </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {stats.recentes.map((demande) => (
+                <Link key={demande.id} to="/laborantin/demandes" style={{ textDecoration: 'none' }}>
+                  <div style={actionItem}>
+                    <div>
+                      <div style={{ fontSize: 13, color: '#EEF4FF', fontWeight: 700 }}>
+                        {demande.type_analyse || 'Analyse médicale'}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'rgba(238,244,255,0.45)', marginTop: 2 }}>
+                        {demande.patient?.user
+                          ? `${demande.patient.user.prenom} ${demande.patient.user.nom}`
+                          : 'Patient'}
+                      </div>
+                    </div>
+                    <span style={{ color: demande.urgence ? '#F87171' : '#FBBF24' }}>
+                      {demande.urgence ? 'Urgent' : 'Voir'}
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={panelStyle}>
@@ -71,15 +122,17 @@ const DashboardHome = () => {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              { label: 'Toutes les demandes',    color: '#FBBF24' },
-              { label: 'Saisir un résultat',     color: '#0ED2A0' },
-              { label: 'Envoyer les résultats',  color: '#38BDF8' },
-              { label: 'Analyses urgentes',      color: '#F87171' },
+              { label: 'Toutes les demandes',    color: '#FBBF24', to: '/laborantin/demandes' },
+              { label: 'Saisir un résultat',     color: '#0ED2A0', to: '/laborantin/resultats' },
+              { label: 'Envoyer les résultats',  color: '#38BDF8', to: '/laborantin/resultats' },
+              { label: 'Analyses urgentes',      color: '#F87171', to: '/laborantin/demandes' },
             ].map((action, i) => (
-              <div key={i} style={{ ...actionItem, borderLeftColor: action.color }}>
-                <span style={{ fontSize: 13, color: 'rgba(238,244,255,0.75)' }}>{action.label}</span>
-                <span style={{ color: action.color }}>→</span>
-              </div>
+              <Link key={i} to={action.to} style={{ textDecoration: 'none' }}>
+                <div style={{ ...actionItem, borderLeftColor: action.color }}>
+                  <span style={{ fontSize: 13, color: 'rgba(238,244,255,0.75)' }}>{action.label}</span>
+                  <span style={{ color: action.color }}>→</span>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
