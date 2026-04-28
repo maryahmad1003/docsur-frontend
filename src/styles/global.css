@@ -23,10 +23,11 @@
   --glass-border:  #E5E7EB;
   --glass-border-active: #16A34A;
 
-  /* Text */
+/* Text */
   --text:          #111827;
-  --text-muted:    #6B7280;
-  --text-subtle:   #9CA3AF;
+  --text-muted:    #4B5563;
+  --text-subtle:   #6B7280;
+  --text-light:    #6B7280;
 
   /* Semantic */
   --success:        #16A34A;

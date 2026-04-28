@@ -143,7 +143,7 @@ export default function CampagnesPage() {
       ) : filtered.length === 0 ? (
         <div style={emptyState}>
           <FiBell size={40} color="#BBF7D0" />
-          <p style={{ color: '#6B7280', marginTop: 12, fontSize: 14 }}>Aucune campagne trouvée</p>
+          <p style={{ color: '#4B5563', marginTop: 12, fontSize: 14 }}>Aucune campagne trouvée</p>
           <button onClick={openCreate} style={{ ...btnPrimary, marginTop: 20 }}><FiPlus /> Créer une campagne</button>
         </div>
       ) : (
@@ -173,8 +173,8 @@ export default function CampagnesPage() {
                         <span style={{ color: '#4B5563', fontSize: 13 }}>{formatDate(c.date_debut)}</span>
                       </div>
                     </td>
-                    <td style={{ ...tdStyle, color: '#6B7280', fontSize: 13 }}>{formatDate(c.date_fin)}</td>
-                    <td style={{ ...tdStyle, color: '#6B7280', fontSize: 13 }}>{c.cible || '—'}</td>
+                    <td style={{ ...tdStyle, color: '#4B5563', fontSize: 13 }}>{formatDate(c.date_fin)}</td>
+                    <td style={{ ...tdStyle, color: '#4B5563', fontSize: 13 }}>{c.cible || '—'}</td>
                     <td style={tdStyle}><span style={statusBadge(status.color)}>{status.label}</span></td>
                     <td style={tdStyle}>
                       <div style={{ display: 'flex', gap: 6 }}>
@@ -242,7 +242,7 @@ export default function CampagnesPage() {
             <div style={{ textAlign: 'center', padding: '8px 0 20px' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>📢</div>
               <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>Supprimer cette campagne ?</h3>
-              <p style={{ fontSize: 14, color: '#6B7280' }}><strong style={{ color: '#111827' }}>{confirm.titre}</strong> sera définitivement supprimée.</p>
+              <p style={{ fontSize: 14, color: '#4B5563' }}><strong style={{ color: '#111827' }}>{confirm.titre}</strong> sera définitivement supprimée.</p>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <button onClick={() => setConfirm(null)} style={{ ...btnCancel, flex: 1 }}>Annuler</button>

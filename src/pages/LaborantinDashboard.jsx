@@ -71,7 +71,7 @@ const DashboardHome = () => {
             </div>
             <div className="value">{s.value}</div>
             <div className="label">{s.label}</div>
-            <div style={{ fontSize: 11, color: 'rgba(238,244,255,0.3)', marginTop: 5 }}>{s.sub}</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 5 }}>{s.sub}</div>
           </div>
         ))}
       </div>
@@ -86,7 +86,7 @@ const DashboardHome = () => {
           {stats.recentes.length === 0 ? (
             <div style={emptyState}>
               <div style={{ fontSize: 36, marginBottom: 10 }}>🔬</div>
-              <div style={{ fontSize: 13, color: 'rgba(238,244,255,0.35)', textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: '#6B7280', textAlign: 'center' }}>
                 Aucune demande d'analyse<br />disponible
               </div>
             </div>
@@ -99,7 +99,7 @@ const DashboardHome = () => {
                       <div style={{ fontSize: 13, color: '#EEF4FF', fontWeight: 700 }}>
                         {demande.type_analyse || 'Analyse médicale'}
                       </div>
-                      <div style={{ fontSize: 11, color: 'rgba(238,244,255,0.45)', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>
                         {demande.patient?.user
                           ? `${demande.patient.user.prenom} ${demande.patient.user.nom}`
                           : 'Patient'}
@@ -129,7 +129,7 @@ const DashboardHome = () => {
             ].map((action, i) => (
               <Link key={i} to={action.to} style={{ textDecoration: 'none' }}>
                 <div style={{ ...actionItem, borderLeftColor: action.color }}>
-                  <span style={{ fontSize: 13, color: 'rgba(238,244,255,0.75)' }}>{action.label}</span>
+                  <span style={{ fontSize: 13, color: '#374151' }}>{action.label}</span>
                   <span style={{ color: action.color }}>→</span>
                 </div>
               </Link>
@@ -159,11 +159,10 @@ const LaborantinDashboard = () => (
   </div>
 );
 
-const subGreetStyle = { fontSize: 13, color: 'rgba(238,244,255,0.4)', marginBottom: 4, fontWeight: 500 };
+const subGreetStyle = { fontSize: 13, color: '#6B7280', marginBottom: 4, fontWeight: 500 };
 const pageTitleStyle = {
   fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px',
-  background: 'linear-gradient(135deg, #EEF4FF 0%, rgba(238,244,255,0.6) 100%)',
-  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+  color: '#111827',
 };
 const avatarStyle = {
   width: 44, height: 44, borderRadius: '50%',
@@ -173,19 +172,19 @@ const avatarStyle = {
 };
 const rowStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 };
 const panelStyle = {
-  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: 20, padding: '24px 26px', backdropFilter: 'blur(20px)',
+  background: '#FFFFFF', border: '1px solid #E5E7EB',
+  borderRadius: 20, padding: '24px 26px',
 };
 const panelHeaderStyle = { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 };
-const panelTitleStyle = { fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 700, color: '#EEF4FF' };
+const panelTitleStyle = { fontFamily: "'Outfit', sans-serif", fontSize: 15, fontWeight: 700, color: '#111827' };
 const emptyState = {
   display: 'flex', flexDirection: 'column', alignItems: 'center',
   justifyContent: 'center', minHeight: 120, padding: 20,
 };
 const actionItem = {
   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-  padding: '12px 14px', background: 'rgba(255,255,255,0.03)',
-  borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)',
+  padding: '12px 14px', background: '#F9FAFB',
+  borderRadius: 10, border: '1px solid #E5E7EB',
   borderLeft: '3px solid', cursor: 'pointer',
 };
 

@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import {
-  FiCalendar, FiPlus, FiClock, FiX, FiCheck,
+  FiCalendar, FiClock, FiX, FiCheck,
   FiMapPin, FiSearch
 } from 'react-icons/fi';
-import { getRendezVousMedecin } from '../../api/medecinAPI';
+import { getRendezVousMedecin, confirmerRendezVous, refuserRendezVous } from '../../api/medecinAPI';
 import { normalizeCollection } from '../../utils/apiData';
+import { toast } from 'react-toastify';
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
 // ─── STATUT CONFIG ────────────────────────────────────────────────────────────
 const STATUT = {
   confirme:   { label: 'Confirmé',   color: '#0ED2A0', bg: 'rgba(14,210,160,0.1)' },
-  en_attente: { label: 'En attente', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
+  en_attente: { label: 'Demande en attente', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
   annule:     { label: 'Annulé',     color: '#F87171', bg: 'rgba(248,113,113,0.1)' },
 };
 
@@ -33,10 +34,6 @@ export default function RendezVousPage() {
   const [rdvList, setRdvList]         = useState([]);
   const [activeFilter, setActiveFilter] = useState('Tous');
   const [searchQuery, setSearchQuery]   = useState('');
-  const [showModal, setShowModal]       = useState(false);
-  const [form, setForm]                 = useState({
-    nom: '', prenom: '', date: '', heure: '', motif: '', lieu: '', type: 'presentiel'
-  });
 
   useEffect(() => {
     getRendezVousMedecin()
@@ -77,13 +74,35 @@ export default function RendezVousPage() {
     .sort((a, b) => a.heure.localeCompare(b.heure));
 
   // ── Actions ──
-  const handleConfirm = () => {};
-  const handleCancel  = () => {};
-
-  const handleCreate = (e) => {
-    e.preventDefault();
-    setForm({ nom: '', prenom: '', date: '', heure: '', motif: '', lieu: '', type: 'presentiel' });
-    setShowModal(false);
+  const handleConfirm = async (id) => {
+    try {
+      await confirmerRendezVous(id);
+      toast.success('Rendez-vous confirmé');
+      getRendezVousMedecin()
+        .then(res => setRdvList(normalizeCollection(res).map(rdv => ({
+          id: rdv.id,
+          patient: { nom: rdv.patient?.nom || rdv.patient?.user?.nom || '', prenom: rdv.patient?.prenom || rdv.patient?.user?.prenom || '' },
+          date: rdv.date || rdv.date_heure?.slice(0, 10) || '', heure: rdv.heure || rdv.date_heure?.slice(11, 16) || '',
+          motif: rdv.motif || '', lieu: rdv.lieu || 'Cabinet', statut: rdv.statut || 'en_attente', type: rdv.type || 'presentiel',
+        }))))
+        .catch(() => {});
+    } catch { toast.error('Erreur de confirmation'); }
+  };
+  
+  const handleCancel = async (id) => {
+    if (!window.confirm('Voulez-vous vraiment refuser ce rendez-vous ?')) return;
+    try {
+      await refuserRendezVous(id);
+      toast.success('Rendez-vous refusé');
+      getRendezVousMedecin()
+        .then(res => setRdvList(normalizeCollection(res).map(rdv => ({
+          id: rdv.id,
+          patient: { nom: rdv.patient?.nom || rdv.patient?.user?.nom || '', prenom: rdv.patient?.prenom || rdv.patient?.user?.prenom || '' },
+          date: rdv.date || rdv.date_heure?.slice(0, 10) || '', heure: rdv.heure || rdv.date_heure?.slice(11, 16) || '',
+          motif: rdv.motif || '', lieu: rdv.lieu || 'Cabinet', statut: rdv.statut || 'en_attente', type: rdv.type || 'presentiel',
+        }))))
+        .catch(() => {});
+    } catch { toast.error('Erreur lors du refus'); }
   };
 
   const initials = (p) => `${p.prenom[0]}${p.nom[0]}`.toUpperCase();
@@ -95,20 +114,17 @@ export default function RendezVousPage() {
       {/* ── Header ── */}
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>Rendez-vous</h1>
-          <p style={styles.subtitle}>Gérez votre planning de consultations</p>
+          <h1 style={styles.title}>Demandes de rendez-vous</h1>
+          <p style={styles.subtitle}>Demandes envoyées par les patients en présentiel ou en téléconsultation</p>
         </div>
-        <button style={styles.addBtn} onClick={() => setShowModal(true)}>
-          <FiPlus size={18} /> Nouveau RDV
-        </button>
       </div>
 
       {/* ── KPIs ── */}
       <div style={styles.kpiGrid}>
-        <KpiCard icon={<FiCalendar size={20}/>} label="Total RDV"    value={kpiTotal}    color="#A78BFA" />
+        <KpiCard icon={<FiCalendar size={20}/>} label="Total demandes" value={kpiTotal}    color="#A78BFA" />
         <KpiCard icon={<FiCalendar size={20}/>} label="Aujourd'hui"  value={kpiAujourd}  color="#38BDF8" />
         <KpiCard icon={<FiCheck    size={20}/>} label="Confirmés"    value={kpiConfirme} color="#0ED2A0" />
-        <KpiCard icon={<FiClock    size={20}/>} label="En attente"   value={kpiAttente}  color="#FBBF24" />
+        <KpiCard icon={<FiClock    size={20}/>} label="Demandes en attente" value={kpiAttente}  color="#FBBF24" />
       </div>
 
       {/* ── Body: 60/40 ── */}
@@ -195,61 +211,6 @@ export default function RendezVousPage() {
           </div>
         </div>
       </div>
-
-      {/* ── Modal ── */}
-      {showModal && (
-        <div style={styles.overlay}>
-          <div style={styles.modal}>
-            <div style={styles.modalHeader}>
-              <h2 style={styles.modalTitle}>Nouveau rendez-vous</h2>
-              <button style={styles.closeBtn} onClick={() => setShowModal(false)}><FiX size={18}/></button>
-            </div>
-            <form onSubmit={handleCreate} style={styles.modalForm}>
-              <div style={styles.formRow}>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Prénom patient</label>
-                  <input style={styles.input} required value={form.prenom} onChange={e => setForm(f=>({...f,prenom:e.target.value}))} placeholder="Prénom" />
-                </div>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Nom patient</label>
-                  <input style={styles.input} required value={form.nom} onChange={e => setForm(f=>({...f,nom:e.target.value}))} placeholder="Nom" />
-                </div>
-              </div>
-              <div style={styles.formRow}>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Date</label>
-                  <input style={styles.input} type="date" required value={form.date} onChange={e => setForm(f=>({...f,date:e.target.value}))} />
-                </div>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Heure</label>
-                  <input style={styles.input} type="time" required value={form.heure} onChange={e => setForm(f=>({...f,heure:e.target.value}))} />
-                </div>
-              </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Motif</label>
-                <input style={styles.input} required value={form.motif} onChange={e => setForm(f=>({...f,motif:e.target.value}))} placeholder="Motif de consultation" />
-              </div>
-              <div style={styles.formRow}>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Lieu</label>
-                  <input style={styles.input} value={form.lieu} onChange={e => setForm(f=>({...f,lieu:e.target.value}))} placeholder="Cabinet" />
-                </div>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Type</label>
-                  <select style={styles.input} value={form.type} onChange={e => setForm(f=>({...f,type:e.target.value}))}>
-                    <option value="presentiel">Présentiel</option>
-                    <option value="teleconsultation">Téléconsultation</option>
-                  </select>
-                </div>
-              </div>
-              <div style={styles.modalActions}>
-                <button type="button" style={styles.cancelBtn} onClick={() => setShowModal(false)}>Annuler</button>
-                <button type="submit" style={styles.submitBtn}><FiCheck size={15}/> Créer le RDV</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -343,20 +304,6 @@ const styles = {
     color: '#6B7280',
     margin: '6px 0 0',
     fontSize: 14,
-  },
-  addBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    background: '#16A34A',
-    color: '#FFFFFF',
-    border: '1px solid #15803D',
-    borderRadius: 12,
-    padding: '10px 20px',
-    fontWeight: 700,
-    fontSize: 14,
-    cursor: 'pointer',
-    fontFamily: "'DM Sans', sans-serif",
   },
   kpiGrid: {
     display: 'grid',

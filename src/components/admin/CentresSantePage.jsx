@@ -115,7 +115,7 @@ export default function CentresSantePage() {
       ) : filtered.length === 0 ? (
         <div style={emptyState}>
           <FiHome size={40} color="#BBF7D0" />
-          <p style={{ color: '#6B7280', marginTop: 12, fontSize: 14 }}>Aucun centre de santé trouvé</p>
+          <p style={{ color: '#4B5563', marginTop: 12, fontSize: 14 }}>Aucun centre de santé trouvé</p>
         </div>
       ) : (
         <div style={cardsGrid}>
@@ -187,7 +187,7 @@ export default function CentresSantePage() {
             <div style={{ textAlign: 'center', padding: '8px 0 20px' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🏥</div>
               <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>Supprimer ce centre ?</h3>
-              <p style={{ fontSize: 14, color: '#6B7280' }}><strong style={{ color: '#111827' }}>{confirm.nom}</strong> sera définitivement supprimé.</p>
+              <p style={{ fontSize: 14, color: '#4B5563' }}><strong style={{ color: '#111827' }}>{confirm.nom}</strong> sera définitivement supprimé.</p>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <button onClick={() => setConfirm(null)} style={{ ...btnCancel, flex: 1 }}>Annuler</button>
@@ -224,9 +224,9 @@ const cardTop = { padding: '20px 20px 14px', display: 'flex', alignItems: 'flex-
 const centreNameStyle = { fontFamily: "'Outfit',sans-serif", fontSize: 16, fontWeight: 700, color: '#111827', marginTop: 6 };
 const typeBadge = type => makeSoftBadge(TYPE_COLORS[type] || adminPalette.primarySoft);
 const cardBody = { padding: '14px 20px', display: 'flex', flexDirection: 'column', gap: 8 };
-const infoRow = { display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#6B7280' };
+const infoRow = { display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#4B5563' };
 const cardFooter = { padding: '12px 20px', background: '#F9FAFB', borderTop: '1px solid #F1F5F9' };
-const medecinsBadge = { fontSize: 12, fontWeight: 600, color: '#6B7280' };
+const medecinsBadge = { fontSize: 12, fontWeight: 600, color: '#4B5563' };
 const iconBtn = color => makeIconButton(color);
 const emptyState = { ...adminEmptyState, padding: '80px 20px' };
 const spinnerEl = adminSpinner;

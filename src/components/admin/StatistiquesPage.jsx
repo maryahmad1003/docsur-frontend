@@ -22,7 +22,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
     <div style={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 10, padding: '10px 14px', boxShadow: '0 8px 24px rgba(15,23,42,0.12)' }}>
-      <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 6 }}>{label}</p>
+      <p style={{ fontSize: 12, color: '#4B5563', marginBottom: 6 }}>{label}</p>
       {payload.map((p, i) => (
         <p key={i} style={{ fontSize: 14, fontWeight: 700, color: p.color }}>{p.value}</p>
       ))}
@@ -82,7 +82,7 @@ export default function StatistiquesPage() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
       <div style={{ textAlign: 'center' }}>
         <div style={spinnerEl} />
-        <p style={{ color: '#6B7280', marginTop: 16, fontSize: 14 }}>Chargement des statistiques…</p>
+        <p style={{ color: '#4B5563', marginTop: 16, fontSize: 14 }}>Chargement des statistiques…</p>
       </div>
     </div>
   );
@@ -110,7 +110,7 @@ export default function StatistiquesPage() {
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 30, fontWeight: 800, color: k.color, lineHeight: 1, margin: '10px 0 4px' }}>
               {k.value ?? '—'}
             </div>
-            <div style={{ fontSize: 12, color: '#6B7280', fontWeight: 500 }}>{k.label}</div>
+            <div style={{ fontSize: 12, color: '#4B5563', fontWeight: 500 }}>{k.label}</div>
           </div>
         ))}
       </div>
@@ -119,13 +119,13 @@ export default function StatistiquesPage() {
       <div style={highlightRow}>
         {[
           { label: 'Consultations ce mois', value: stats?.consultations_ce_mois ?? 0, color: '#FBBF24', icon: '📋' },
-          { label: 'RDV en attente',         value: stats?.rdv_en_attente ?? 0,         color: '#F87171', icon: '⏳' },
-          { label: "RDV aujourd'hui",         value: stats?.rdv_aujourdhui ?? 0,         color: '#0ED2A0', icon: '📅' },
+          { label: 'RDV a venir',             value: stats?.rdv_a_venir ?? 0,            color: '#0ED2A0', icon: '📅' },
+          { label: 'RDV cette semaine',       value: stats?.rdv_cette_semaine ?? 0,      color: '#F87171', icon: '⏳' },
         ].map((item, i) => (
           <div key={i} style={{ ...highlightCard, borderColor: `${item.color}25` }}>
             <span style={{ fontSize: 28 }}>{item.icon}</span>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 34, fontWeight: 900, color: item.color, margin: '8px 0 4px' }}>{item.value}</div>
-            <div style={{ fontSize: 13, color: '#6B7280' }}>{item.label}</div>
+            <div style={{ fontSize: 13, color: '#4B5563' }}>{item.label}</div>
           </div>
         ))}
       </div>
@@ -140,8 +140,8 @@ export default function StatistiquesPage() {
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={patientsMois} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis dataKey="mois" tick={{ fill: '#6B7280', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#6B7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="mois" tick={{ fill: '#4B5563', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#4B5563', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="Patients" fill="#38BDF8" radius={[6, 6, 0, 0]} />
             </BarChart>
@@ -156,8 +156,8 @@ export default function StatistiquesPage() {
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={consultsMois} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-              <XAxis dataKey="mois" tick={{ fill: '#6B7280', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#6B7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="mois" tick={{ fill: '#4B5563', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#4B5563', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Line dataKey="Consultations" stroke="#0ED2A0" strokeWidth={2.5} dot={{ fill: '#0ED2A0', r: 4 }} activeDot={{ r: 6 }} />
             </LineChart>
@@ -198,7 +198,7 @@ export default function StatistiquesPage() {
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={topPatho} layout="vertical" margin={{ top: 0, right: 10, left: 10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
-                <XAxis type="number" tick={{ fill: '#6B7280', fontSize: 11 }} axisLine={false} tickLine={false} />
+                <XAxis type="number" tick={{ fill: '#4B5563', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={{ fill: '#4B5563', fontSize: 11 }} width={110} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="Cas" fill="#A78BFA" radius={[0, 6, 6, 0]} />

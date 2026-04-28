@@ -2,6 +2,33 @@ import { useState, useEffect } from 'react';
 import { getMesPrescriptions } from '../../api/patientAPI';
 import { FiFileText, FiPackage, FiCalendar, FiUser, FiDownload, FiSearch } from 'react-icons/fi';
 
+const normalizeDoctorName = (medecin) => {
+  if (!medecin) return '';
+  if (typeof medecin === 'string') return medecin;
+
+  if (medecin.user) {
+    return `Dr. ${medecin.user.prenom} ${medecin.user.nom}`;
+  }
+
+  const fullName = [medecin.prenom, medecin.nom].filter(Boolean).join(' ').trim();
+  return fullName ? `Dr. ${fullName}` : '';
+};
+
+const normalizePrescription = (prescription = {}) => ({
+  ...prescription,
+  date_prescription: prescription.date_prescription || prescription.date_emission || '',
+  medecin: normalizeDoctorName(prescription.medecin),
+  consultation_motif: prescription.consultation_motif || prescription.consultation?.motif || 'Ordonnance',
+  medicaments: Array.isArray(prescription.medicaments)
+    ? prescription.medicaments.map((medicament) => ({
+        ...medicament,
+        dosage: medicament.dosage || '—',
+        posologie: medicament.posologie || medicament.pivot?.posologie || '—',
+        duree: medicament.duree || medicament.duree_traitement || medicament.pivot?.duree_traitement || '—',
+      }))
+    : [],
+});
+
 const PrescriptionsPatientPage = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading]             = useState(true);
@@ -10,7 +37,7 @@ const PrescriptionsPatientPage = () => {
 
   useEffect(() => {
     getMesPrescriptions()
-      .then(res => setPrescriptions(res.data?.data || res.data || []))
+      .then(res => setPrescriptions((res.data?.data || res.data || []).map(normalizePrescription)))
       .catch(() => setPrescriptions([
         {
           id: 1, date_prescription: '2026-03-10', statut: 'active',
@@ -29,7 +56,7 @@ const PrescriptionsPatientPage = () => {
             { nom: 'Amlodipine 5mg', dosage: '1 comprimé', posologie: '1 fois/jour', duree: '30 jours' },
           ],
         },
-      ]))
+      ].map(normalizePrescription)))
       .finally(() => setLoading(false));
   }, []);
 

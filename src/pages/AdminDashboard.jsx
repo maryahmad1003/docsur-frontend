@@ -9,6 +9,8 @@ import { FiUsers, FiClipboard, FiHome, FiBarChart2, FiTrendingUp, FiActivity } f
 import UtilisateursPage  from '../components/admin/UtilisateursPage';
 import CentresSantePage  from '../components/admin/CentresSantePage';
 import CampagnesPage     from '../components/admin/CampagnesPage';
+import RolesPermissionsPage from '../components/admin/RolesPermissionsPage';
+import SecuritePage      from '../components/admin/SecuritePage';
 import StatistiquesPage  from '../components/admin/StatistiquesPage';
 import { adminPalette } from '../components/admin/adminTheme';
 
@@ -72,7 +74,7 @@ const DashboardHome = () => {
             ].map((item, i) => (
               <div key={i} style={overviewItem}>
                 <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 26, fontWeight: 800, color: item.color }}>{item.value}</div>
-                <div style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 12, color: '#4B5563', marginTop: 4 }}>{item.label}</div>
               </div>
             ))}
           </div>
@@ -90,7 +92,7 @@ const DashboardHome = () => {
               { label: 'Consults ce mois',value: stats?.consultations_ce_mois ?? 0, color: '#38BDF8' },
             ].map((item, i) => (
               <div key={i} style={activityItem}>
-                <span style={{ fontSize: 13, color: '#6B7280' }}>{item.label}</span>
+                <span style={{ fontSize: 13, color: '#4B5563' }}>{item.label}</span>
                 <span style={{ fontFamily: "'Outfit',sans-serif", fontWeight: 800, fontSize: 18, color: item.color }}>{item.value}</span>
               </div>
             ))}
@@ -113,6 +115,8 @@ const AdminDashboard = () => (
       <Routes>
         <Route index                    element={<DashboardHome />} />
         <Route path="utilisateurs"      element={<UtilisateursPage />} />
+        <Route path="roles-permissions" element={<RolesPermissionsPage />} />
+        <Route path="securite"          element={<SecuritePage />} />
         <Route path="centres-sante"     element={<CentresSantePage />} />
         <Route path="campagnes"         element={<CampagnesPage />} />
         <Route path="statistiques"      element={<StatistiquesPage />} />
@@ -121,7 +125,7 @@ const AdminDashboard = () => (
   </div>
 );
 
-const subGreetStyle = { fontSize: 13, color: '#6B7280', marginBottom: 4, fontWeight: 500 };
+const subGreetStyle = { fontSize: 13, color: '#4B5563', marginBottom: 4, fontWeight: 500 };
 const pageTitleStyle = { fontFamily: "'Outfit',sans-serif", fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px', color: '#111827' };
 const avatarStyle = { width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg,#0ED2A0,#38BDF8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Outfit',sans-serif", fontWeight: 800, fontSize: 17, color: '#fff', flexShrink: 0 };
 const rowStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 };

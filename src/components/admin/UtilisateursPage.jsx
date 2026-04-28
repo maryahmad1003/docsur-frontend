@@ -31,8 +31,20 @@ import {
 
 const ROLES = ['patient', 'medecin', 'pharmacien', 'laborantin', 'administrateur'];
 const ROLE_COLORS = { patient: '#38BDF8', medecin: '#0ED2A0', pharmacien: '#A78BFA', laborantin: '#FBBF24', administrateur: '#F87171' };
+const ROLE_LABELS = { patient: 'Patient', medecin: 'Médecin', pharmacien: 'Pharmacien', laborantin: 'Laborantin', administrateur: 'Administrateur' };
 
-const initForm = { nom: '', prenom: '', email: '', password: '', telephone: '', role: 'patient' };
+const initForm = {
+  nom: '',
+  prenom: '',
+  email: '',
+  password: '',
+  telephone: '',
+  role: 'medecin',
+  date_naissance: '',
+  sexe: 'M',
+  adresse: '',
+  groupe_sanguin: '',
+};
 
 export default function UtilisateursPage() {
   const [users, setUsers]       = useState([]);
@@ -63,7 +75,22 @@ export default function UtilisateursPage() {
   useEffect(() => { load(); }, [load]);
 
   const openCreate = () => { setEditing(null); setForm(initForm); setModal(true); };
-  const openEdit   = (u)  => { setEditing(u); setForm({ nom: u.nom, prenom: u.prenom, email: u.email, password: '', telephone: u.telephone || '', role: u.role }); setModal(true); };
+  const openEdit   = (u)  => {
+    setEditing(u);
+    setForm({
+      nom: u.nom,
+      prenom: u.prenom,
+      email: u.email,
+      password: '',
+      telephone: u.telephone || '',
+      role: u.role,
+      date_naissance: u.patient?.date_naissance || '',
+      sexe: u.patient?.sexe || 'M',
+      adresse: u.patient?.adresse || '',
+      groupe_sanguin: u.patient?.groupe_sanguin || '',
+    });
+    setModal(true);
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -72,10 +99,23 @@ export default function UtilisateursPage() {
       if (editing) {
         const payload = { ...form };
         if (!payload.password) delete payload.password;
+        if (payload.role !== 'patient') {
+          delete payload.date_naissance;
+          delete payload.sexe;
+          delete payload.adresse;
+          delete payload.groupe_sanguin;
+        }
         await modifierUtilisateur(editing.id, payload);
         toast.success('Utilisateur modifié');
       } else {
-        await creerUtilisateur(form);
+        const payload = { ...form };
+        if (payload.role !== 'patient') {
+          delete payload.date_naissance;
+          delete payload.sexe;
+          delete payload.adresse;
+          delete payload.groupe_sanguin;
+        }
+        await creerUtilisateur(payload);
         toast.success('Utilisateur créé');
       }
       setModal(false);
@@ -150,7 +190,7 @@ export default function UtilisateursPage() {
         ) : users.length === 0 ? (
           <div style={emptyState}>
             <FiUser size={40} color="#BBF7D0" />
-            <p style={{ color: '#6B7280', marginTop: 12, fontSize: 14 }}>Aucun utilisateur trouvé</p>
+            <p style={{ color: '#4B5563', marginTop: 12, fontSize: 14 }}>Aucun utilisateur trouvé</p>
           </div>
         ) : (
           <table>
@@ -221,9 +261,34 @@ export default function UtilisateursPage() {
               <div style={{ marginBottom: 18 }}>
                 <label style={labelStyle}>Rôle</label>
                 <select value={form.role} onChange={e => setForm({...form, role: e.target.value})} style={inputStyle}>
-                  {ROLES.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+                  {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                 </select>
+                <p style={helperStyle}>
+                  {form.role === 'patient'
+                    ? 'Le patient peut être créé ici par un administrateur. Un médecin peut aussi le créer depuis son espace, avec QR code automatique.'
+                    : "Ce compte sera créé par l'administrateur avec les droits correspondant à ce rôle."}
+                </p>
               </div>
+              {form.role === 'patient' && (
+                <div style={{ ...grid2, marginBottom: 18 }}>
+                  <Field label="Date de naissance" type="date" value={form.date_naissance} onChange={v => setForm({...form, date_naissance: v})} required />
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>Sexe</label>
+                    <select value={form.sexe} onChange={e => setForm({...form, sexe: e.target.value})} style={inputStyle}>
+                      <option value="M">Masculin</option>
+                      <option value="F">Féminin</option>
+                    </select>
+                  </div>
+                  <Field label="Adresse" value={form.adresse} onChange={v => setForm({...form, adresse: v})} placeholder="Dakar, Plateau" />
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>Groupe sanguin</label>
+                    <select value={form.groupe_sanguin} onChange={e => setForm({...form, groupe_sanguin: e.target.value})} style={inputStyle}>
+                      <option value="">— Sélectionner —</option>
+                      {['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                  </div>
+                </div>
+              )}
               <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
                 <button type="button" onClick={() => setModal(false)} style={btnCancel}>Annuler</button>
                 <button type="submit" disabled={saving} style={btnPrimary}>
@@ -244,7 +309,7 @@ export default function UtilisateursPage() {
               <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
                 Supprimer l'utilisateur ?
               </h3>
-              <p style={{ fontSize: 14, color: '#6B7280' }}>
+              <p style={{ fontSize: 14, color: '#4B5563' }}>
                 <strong style={{ color: '#111827' }}>{confirm.prenom} {confirm.nom}</strong> sera définitivement supprimé.
               </p>
             </div>
@@ -298,7 +363,7 @@ const trStyle = { transition: 'background 0.15s' };
 const avatarSmall = { width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Outfit',sans-serif", fontWeight: 700, fontSize: 12, color: '#fff', flexShrink: 0 };
 const rolePill = role => makeSoftBadge(ROLE_COLORS[role] || adminPalette.primarySoft);
 const statusBtn = active => ({
-  ...makeSoftBadge(active ? '#16A34A' : '#6B7280'),
+  ...makeSoftBadge(active ? '#16A34A' : '#4B5563'),
   background: active ? '#F0FDF4' : '#F9FAFB',
   cursor: 'pointer',
 });
@@ -313,5 +378,6 @@ const closeBtn = adminCloseButton;
 const grid2 = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 };
 const labelStyle = adminLabel;
 const inputStyle = adminInput;
+const helperStyle = { margin: '8px 0 0', fontSize: 12, color: adminPalette.textSubtle, lineHeight: 1.5 };
 const btnCancel = adminSecondaryButton;
 const btnDanger = adminDangerButton;

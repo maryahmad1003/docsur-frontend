@@ -99,12 +99,15 @@ export default function ConsultationsPage() {
     { label: 'Terminées',  value: consultations.filter(c => c.statut === 'terminee').length,  color: '#0ED2A0', bg: 'rgba(14,210,160,0.1)' },
   ];
 
+  const selectedPatient = patients.find((patient) => String(patient.id) === String(form.patient_id));
+
   async function handleCreate(e) {
     e.preventDefault();
     setSubmitting(true);
     let created = false;
     const payload = {
       patient_id: Number(form.patient_id),
+      date_consultation: form.date_consultation,
       motif: form.motif,
       notes: form.notes,
     };
@@ -272,14 +275,19 @@ export default function ConsultationsPage() {
             <form onSubmit={handleCreate}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                 <div>
-                  <label style={labelStyle}>Nom du patient</label>
+                  <label style={labelStyle}>Patient</label>
                   <div style={inputWrap}>
-                    <FiUser size={14} color="#9CA3AF" />
-                    <select style={inputStyle} value={form.patient_id} onChange={e => setForm(f => ({ ...f, patient_id: e.target.value }))} required>
-                      <option value="">Sélectionner un patient</option>
+                    <FiUser size={14} color="#9CA3AF" style={{ marginTop: 2 }} />
+                    <select
+                      style={inputStyle}
+                      value={form.patient_id}
+                      onChange={e => setForm(f => ({ ...f, patient_id: e.target.value }))}
+                      required
+                    >
+                      <option value="">Selectionner un patient</option>
                       {patients.map((patient) => (
                         <option key={patient.id} value={patient.id}>
-                          {(patient.prenom || patient.user?.prenom || '')} {(patient.nom || patient.user?.nom || '')}
+                          {(patient.ref || patient.num_dossier || 'Sans numero')} - {(patient.prenom || patient.user?.prenom || '')} {(patient.nom || patient.user?.nom || '')}
                         </option>
                       ))}
                     </select>
@@ -289,10 +297,24 @@ export default function ConsultationsPage() {
                   <label style={labelStyle}>Date de consultation</label>
                   <div style={inputWrap}>
                     <FiCalendar size={14} color="#9CA3AF" />
-                    <input style={{ ...inputStyle, colorScheme: 'light' }} type="date" value={form.date_consultation} onChange={e => setForm(f => ({ ...f, date_consultation: e.target.value }))} disabled />
+                    <input
+                      style={{ ...inputStyle, colorScheme: 'light' }}
+                      type="date"
+                      value={form.date_consultation}
+                      onChange={e => setForm(f => ({ ...f, date_consultation: e.target.value }))}
+                      required
+                    />
                   </div>
                 </div>
               </div>
+              {selectedPatient && (
+                <div style={selectedPatientCardStyle}>
+                  <div style={selectedPatientTitleStyle}>Patient selectionne</div>
+                  <div style={selectedPatientTextStyle}>
+                    {(selectedPatient.ref || selectedPatient.num_dossier || 'Sans numero')} · {(selectedPatient.prenom || selectedPatient.user?.prenom || '')} {(selectedPatient.nom || selectedPatient.user?.nom || '')}
+                  </div>
+                </div>
+              )}
               <div style={{ marginBottom: 16 }}>
                 <label style={labelStyle}>Motif de consultation</label>
                 <div style={inputWrap}>
@@ -621,6 +643,29 @@ const labelStyle = {
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
   marginBottom: 8,
+};
+
+const selectedPatientCardStyle = {
+  marginBottom: 16,
+  padding: '12px 14px',
+  borderRadius: 12,
+  border: '1px solid rgba(14,210,160,0.2)',
+  background: 'rgba(14,210,160,0.08)',
+};
+
+const selectedPatientTitleStyle = {
+  fontSize: 11,
+  fontWeight: 700,
+  color: '#15803D',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  marginBottom: 4,
+};
+
+const selectedPatientTextStyle = {
+  fontSize: 13,
+  fontWeight: 600,
+  color: '#111827',
 };
 
 const submitBtn = {

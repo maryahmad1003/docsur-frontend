@@ -63,7 +63,7 @@ const LoginForm = () => {
             ].map((p, i) => (
               <div key={i} style={pillStyle}>
                 <span>{p.icon}</span>
-                <span style={{ fontSize: 13, color: '#6B7280' }}>{p.text}</span>
+                <span style={{ fontSize: 13, color: '#4B5563' }}>{p.text}</span>
               </div>
             ))}
           </div>
@@ -71,7 +71,7 @@ const LoginForm = () => {
           <div style={statusCardStyle}>
             <div style={statusDotStyle} />
             <div>
-              <div style={{ fontSize: 12, color: '#9CA3AF' }}>Système actif</div>
+              <div style={{ fontSize: 12, color: '#4B5563' }}>Système actif</div>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A' }}>Protection en temps réel</div>
             </div>
           </div>
@@ -205,7 +205,7 @@ const heroTitleStyle = {
 
 const heroSubStyle = {
   fontSize: 14,
-  color: '#6B7280',
+  color: '#4B5563',
   lineHeight: 1.7,
   maxWidth: 240,
 };
@@ -273,7 +273,7 @@ const formTitleStyle = {
 
 const formSubStyle = {
   fontSize: 14,
-  color: '#6B7280',
+  color: '#4B5563',
   marginBottom: 0,
 };
 
@@ -285,7 +285,7 @@ const labelStyle = {
   display: 'block',
   fontSize: 11.5,
   fontWeight: 700,
-  color: '#6B7280',
+  color: '#4B5563',
   textTransform: 'uppercase',
   letterSpacing: '0.6px',
   marginBottom: 6,
@@ -300,7 +300,7 @@ const inputWrapperStyle = {
 const inputIconStyle = {
   position: 'absolute',
   left: 13,
-  color: '#9CA3AF',
+  color: '#4B5563',
   pointerEvents: 'none',
   zIndex: 1,
 };
@@ -348,7 +348,7 @@ const spinnerStyle = {
 const switchTextStyle = {
   textAlign: 'center',
   fontSize: 13,
-  color: '#9CA3AF',
+  color: '#4B5563',
 };
 
 export default LoginForm;

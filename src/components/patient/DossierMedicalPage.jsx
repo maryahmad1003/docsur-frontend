@@ -166,7 +166,7 @@ const QrTab = ({ qrCode, user }) => (
         Votre QR Code Patient
       </div>
       {qrCode ? (
-        <img src={`data:image/svg+xml;base64,${btoa(qrCode)}`}
+        <img src={`data:image/svg+xml;base64,${qrCode}`}
           alt="QR Code patient" style={{ width: 180, height: 180, borderRadius: 12 }}
           onError={(e) => { e.target.style.display = 'none'; }}
         />

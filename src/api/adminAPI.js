@@ -22,6 +22,8 @@ export const supprimerCampagne = (id) => API.delete(`/admin/campagnes/${id}`);
 // Statistiques
 export const getStatistiques = () => API.get('/admin/statistiques');
 export const getStatsCentre = (id) => API.get(`/admin/statistiques/centre/${id}`);
+export const getRolesPermissions = () => API.get('/admin/roles-permissions');
+export const getSecurite = () => API.get('/admin/securite');
 
 // Exports
 export const exportPatientsCSV = () => API.get('/admin/export/patients', { responseType: 'blob' });

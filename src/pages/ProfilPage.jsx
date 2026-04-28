@@ -89,7 +89,7 @@ const ProfilPage = () => {
               <h1 style={titleStyle}>{user?.prenom} {user?.nom}</h1>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                 <span style={{ ...roleBadge, color: meta.color, background: meta.bg, borderColor: `${meta.color}30` }}>{meta.label}</span>
-                <span style={{ fontSize: 12, color: '#6B7280' }}>{user?.email}</span>
+                <span style={{ fontSize: 12, color: '#4B5563' }}>{user?.email}</span>
               </div>
             </div>
           </div>
@@ -132,11 +132,11 @@ const ProfilPage = () => {
                     <label style={labelStyle}>{f.label}</label>
                     {editMode ? (
                       <div style={inputWrap}>
-                        <span style={{ color: '#9CA3AF' }}>{f.icon}</span>
+                        <span style={{ color: '#6B7280' }}>{f.icon}</span>
                         <input value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} style={inputStyle} />
                       </div>
                     ) : (
-                      <div style={readField}>{user?.[f.key] || <span style={{ color: '#9CA3AF', fontStyle: 'italic' }}>Non renseigné</span>}</div>
+                      <div style={readField}>{user?.[f.key] || <span style={{ color: '#6B7280', fontStyle: 'italic' }}>Non renseigné</span>}</div>
                     )}
                   </div>
                 ))}
@@ -146,7 +146,7 @@ const ProfilPage = () => {
                   <label style={labelStyle}>Langue</label>
                   {editMode ? (
                     <div style={inputWrap}>
-                      <span style={{ color: '#9CA3AF' }}><FiGlobe size={14}/></span>
+                      <span style={{ color: '#6B7280' }}><FiGlobe size={14}/></span>
                       <select value={form.langue} onChange={e => setForm(p => ({ ...p, langue: e.target.value }))} style={{ ...inputStyle, cursor: 'pointer' }}>
                         {LANGUES.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
                       </select>
@@ -185,7 +185,7 @@ const ProfilPage = () => {
                   { label: 'Langue d\'interface', value: LANGUES.find(l => l.value === (user?.langue || 'fr'))?.label },
                 ].map(f => (
                   <div key={f.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #E5E7EB' }}>
-                    <span style={{ fontSize: 13, color: '#6B7280' }}>{f.label}</span>
+                    <span style={{ fontSize: 13, color: '#4B5563' }}>{f.label}</span>
                     <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{f.value}</span>
                   </div>
                 ))}
@@ -208,7 +208,7 @@ const ProfilPage = () => {
                   <div key={f.key}>
                     <label style={labelStyle}>{f.label}</label>
                     <div style={inputWrap}>
-                      <FiLock size={14} color="#9CA3AF" />
+                      <FiLock size={14} color="#6B7280" />
                       <input
                         type="password"
                         value={pwForm[f.key]}
@@ -227,7 +227,7 @@ const ProfilPage = () => {
 
             <div style={{ ...card, marginTop: 16, borderColor: 'rgba(248,113,113,0.15)' }}>
               <div style={cardHeader}><span style={{ ...cardTitle, color: '#F87171' }}>⚠️ Zone de danger</span></div>
-              <p style={{ fontSize: 13, color: '#6B7280', marginTop: 12, marginBottom: 16, lineHeight: 1.6 }}>
+              <p style={{ fontSize: 13, color: '#4B5563', marginTop: 12, marginBottom: 16, lineHeight: 1.6 }}>
                 La désactivation de votre compte vous empêchera de vous connecter. Contactez un administrateur pour réactiver votre compte.
               </p>
               <button style={dangerBtn} disabled>Désactiver mon compte</button>
@@ -238,7 +238,7 @@ const ProfilPage = () => {
 
       <style>{`
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-        input::placeholder, textarea::placeholder { color: #9CA3AF; }
+        input::placeholder, textarea::placeholder { color: #6B7280; }
         input:focus, select:focus { outline: none; }
         select option { background: #FFFFFF; color: #111827; }
       `}</style>
@@ -252,11 +252,11 @@ const roleBadge = { display: 'inline-block', padding: '2px 10px', borderRadius: 
 const card = { background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 20, padding: '22px 24px', boxShadow: '0 10px 24px rgba(15, 23, 42, 0.05)' };
 const cardHeader = { display: 'flex', alignItems: 'center', justifyContent: 'space-between' };
 const cardTitle = { display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: '#374151', fontFamily: "'Outfit',sans-serif" };
-const labelStyle = { display: 'block', fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 };
+const labelStyle = { display: 'block', fontSize: 11, fontWeight: 700, color: '#4B5563', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 };
 const inputWrap = { display: 'flex', alignItems: 'center', gap: 10, background: '#FFFFFF', border: '1px solid #D1D5DB', borderRadius: 10, padding: '10px 14px', transition: 'border-color 0.2s' };
 const inputStyle = { flex: 1, background: 'transparent', border: 'none', color: '#111827', fontSize: 13, fontFamily: "'DM Sans',sans-serif" };
 const readField = { background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#374151', fontWeight: 500 };
-const tabBtn = { display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 10, border: '1px solid #E5E7EB', background: '#FFFFFF', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' };
+const tabBtn = { display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', borderRadius: 10, border: '1px solid #E5E7EB', background: '#FFFFFF', color: '#4B5563', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' };
 const tabBtnActive = { background: 'rgba(14,210,160,0.1)', borderColor: 'rgba(14,210,160,0.2)', color: '#0ED2A0' };
 const editBtn = { display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: '#F9FAFB', border: '1px solid #D1D5DB', borderRadius: 8, color: '#4B5563', fontSize: 12, fontWeight: 600, cursor: 'pointer' };
 const cancelBtn = { display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', background: '#F9FAFB', border: '1px solid #D1D5DB', borderRadius: 8, color: '#4B5563', fontSize: 12, fontWeight: 600, cursor: 'pointer' };

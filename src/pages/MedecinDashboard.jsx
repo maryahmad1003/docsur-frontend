@@ -14,6 +14,7 @@ import RendezVousPage         from '../components/medecin/RendezVousPage';
 import TeleconsultationsPage  from '../components/medecin/TeleconsultationsPage';
 import ResultatsAnalysesPage  from '../components/medecin/ResultatsAnalysesPage';
 import ConstantesVitalesPage  from '../components/medecin/ConstantesVitalesPage';
+import TableauBordSuiviPage   from '../components/medecin/TableauBordSuiviPage';
 
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -43,7 +44,7 @@ const StatCard = ({ icon, label, value, color, sub, delay = 0 }) => (
     </div>
     <div className="value">{value}</div>
     <div className="label">{label}</div>
-    {sub && <div style={{ fontSize: 11, color: '#6B7280', marginTop: 6 }}>{sub}</div>}
+    {sub && <div style={{ fontSize: 11, color: '#4B5563', marginTop: 6 }}>{sub}</div>}
   </div>
 );
 
@@ -128,7 +129,7 @@ const DashboardHome = () => {
               <div style={{ ...quickCard, borderColor: `${item.color}20` }}>
                 <span style={{ color: item.color }}>{item.icon}</span>
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{item.label}</span>
-                <span style={{ fontSize: 11, color: '#6B7280' }}>{item.meta}</span>
+                <span style={{ fontSize: 11, color: '#4B5563' }}>{item.meta}</span>
               </div>
               </Link>
             ))}
@@ -143,7 +144,7 @@ const DashboardHome = () => {
           {stats.agendaToday.length === 0 ? (
             <div style={emptyStateStyle}>
               <div style={{ fontSize: 32, marginBottom: 8 }}>📅</div>
-              <div style={{ fontSize: 13, color: '#6B7280', textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: '#4B5563', textAlign: 'center' }}>
                 Aucun rendez-vous planifié<br />pour aujourd'hui
               </div>
             </div>
@@ -184,6 +185,7 @@ const MedecinDashboard = () => (
     <div className="main-content">
       <Routes>
         <Route index                   element={<DashboardHome />} />
+        <Route path="tableau-bord"     element={<TableauBordSuiviPage />} />
         <Route path="patients"         element={<PatientsPage />} />
         <Route path="consultations"    element={<ConsultationsPage />} />
         <Route path="prescriptions"    element={<PrescriptionsPage />} />
@@ -196,7 +198,7 @@ const MedecinDashboard = () => (
   </div>
 );
 
-const subGreetStyle = { fontSize: 13, color: '#6B7280', marginBottom: 4, fontWeight: 500 };
+const subGreetStyle = { fontSize: 13, color: '#4B5563', marginBottom: 4, fontWeight: 500 };
 const pageTitleStyle = {
   fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px',
   color: '#111827',
@@ -246,7 +248,7 @@ const agendaPatientStyle = {
 };
 const agendaMetaStyle = {
   fontSize: 12,
-  color: '#6B7280',
+  color: '#4B5563',
   marginTop: 2,
 };
 const agendaBadgeStyle = {

@@ -6,11 +6,7 @@ import { toast } from 'react-toastify';
 import { FiUser, FiMail, FiPhone, FiLock, FiUserCheck, FiArrowRight, FiShield } from 'react-icons/fi';
 
 const ROLES = [
-  { value: 'patient',        label: 'Patient',        icon: '🧑‍⚕️' },
-  { value: 'medecin',        label: 'Médecin',        icon: '👨‍⚕️' },
-  { value: 'pharmacien',     label: 'Pharmacien',     icon: '💊' },
-  { value: 'laborantin',     label: 'Laborantin',     icon: '🔬' },
-  { value: 'administrateur', label: 'Administrateur', icon: '🛡️' },
+  { value: 'patient', label: 'Patient' },
 ];
 
 const RegisterForm = () => {
@@ -20,6 +16,7 @@ const RegisterForm = () => {
     role: 'patient', date_naissance: '', sexe: 'M',
   });
   const [loading, setLoading] = useState(false);
+  const [patientWelcome, setPatientWelcome] = useState(null);
   const { loginUser } = useAuth();
   const navigate = useNavigate();
 
@@ -32,8 +29,17 @@ const RegisterForm = () => {
       const res = await register(form);
       loginUser(res.data.user, res.data.token);
       toast.success('Inscription réussie !');
-      const role = res.data.user.role;
-      navigate(`/${role === 'administrateur' ? 'admin' : role}`);
+      if (res.data.user.role === 'patient' && res.data.patient_qr_code) {
+        setPatientWelcome({
+          qrCode: res.data.patient_qr_code.qr_code,
+          expiresAt: res.data.patient_qr_code.expires_at,
+          numDossier: res.data.patient?.num_dossier,
+          numeroDossierMedical: res.data.patient?.numero_dossier_medical,
+        });
+      } else {
+        const role = res.data.user.role;
+        navigate(`/${role === 'administrateur' ? 'admin' : role}`);
+      }
     } catch (err) {
       toast.error(
         err.response?.data?.errors
@@ -60,18 +66,13 @@ const RegisterForm = () => {
           <p style={subtitleStyle}>Rejoignez la plateforme médicale sécurisée du Sénégal</p>
         </div>
 
-        {/* Sélecteur de rôle */}
-        <div style={roleGridStyle}>
-          {ROLES.map((r) => (
-            <button
-              key={r.value}
-              type="button"
-              onClick={() => setForm({ ...form, role: r.value })}
-              style={form.role === r.value ? { ...roleBtnStyle, ...roleBtnActiveStyle } : roleBtnStyle}
-            >
-              {r.icon} {r.label}
-            </button>
-          ))}
+        <div style={selectorCardStyle}>
+          <label style={selectorLabelStyle}>Type de compte</label>
+          <select name="role" value={form.role} onChange={handleChange} style={selectorInputStyle}>
+            {ROLES.map((r) => (
+              <option key={r.value} value={r.value}>{r.label}</option>
+            ))}
+          </select>
         </div>
 
         {/* Carte formulaire */}
@@ -97,7 +98,7 @@ const RegisterForm = () => {
                   Informations patient
                 </div>
                 <div style={grid2Style}>
-                  <Field label="Date de naissance" name="date_naissance" type="date" value={form.date_naissance} onChange={handleChange} />
+                  <Field label="Date de naissance" name="date_naissance" type="date" value={form.date_naissance} onChange={handleChange} required />
                   <div style={fieldGroupStyle}>
                     <label style={labelStyle}>Sexe</label>
                     <select name="sexe" value={form.sexe} onChange={handleChange} style={inputStyle}>
@@ -128,6 +129,41 @@ const RegisterForm = () => {
         </div>
       </div>
 
+      {patientWelcome && (
+        <div style={overlayStyle} onClick={(e) => e.target === e.currentTarget && navigate('/patient')}>
+          <div style={welcomeModalStyle}>
+            <div style={welcomeBadgeStyle}>Compte patient cree</div>
+            <h2 style={welcomeTitleStyle}>Votre QR code est disponible</h2>
+            <p style={welcomeTextStyle}>
+              Conservez ce QR code pour vos rendez-vous et l acces a vos informations patient.
+            </p>
+
+            <div style={qrCardStyle}>
+              <img
+                src={`data:image/svg+xml;base64,${patientWelcome.qrCode}`}
+                alt="QR code patient"
+                style={qrImageStyle}
+              />
+            </div>
+
+            <div style={infoGridStyle}>
+              <InfoItem label="Numero patient" value={patientWelcome.numDossier || '—'} />
+              <InfoItem label="Dossier medical" value={patientWelcome.numeroDossierMedical || '—'} />
+              <InfoItem label="Validite du QR" value={formatDate(patientWelcome.expiresAt)} />
+            </div>
+
+            <div style={welcomeActionsStyle}>
+              <button type="button" style={secondaryBtnStyle} onClick={() => navigate('/patient')}>
+                Fermer
+              </button>
+              <button type="button" style={submitBtnStyle} onClick={() => navigate('/patient')}>
+                Acceder a mon espace
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -138,7 +174,7 @@ const Field = ({ icon, label, name, type = 'text', value, onChange, placeholder,
     {label && <label style={labelStyle}>{label}</label>}
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
       {icon && (
-        <span style={{ position: 'absolute', left: 13, color: '#9CA3AF', pointerEvents: 'none', zIndex: 1, display: 'flex' }}>
+        <span style={{ position: 'absolute', left: 13, color: '#4B5563', pointerEvents: 'none', zIndex: 1, display: 'flex' }}>
           {icon}
         </span>
       )}
@@ -156,6 +192,27 @@ const Field = ({ icon, label, name, type = 'text', value, onChange, placeholder,
     </div>
   </div>
 );
+
+const InfoItem = ({ label, value }) => (
+  <div style={infoItemStyle}>
+    <div style={infoLabelStyle}>{label}</div>
+    <div style={infoValueStyle}>{value}</div>
+  </div>
+);
+
+const formatDate = (value) => {
+  if (!value) return '—';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('fr-FR', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+};
 
 /* ── Styles (même charte que LoginForm) ── */
 const pageStyle = {
@@ -213,36 +270,35 @@ const titleStyle = {
 
 const subtitleStyle = {
   fontSize: 14,
-  color: '#6B7280',
+  color: '#4B5563',
 };
 
-const roleGridStyle = {
-  display: 'flex',
-  gap: 8,
-  flexWrap: 'wrap',
-  justifyContent: 'center',
+const selectorCardStyle = {
+  background: '#FFFFFF',
+  border: '1px solid #DCFCE7',
+  borderRadius: 18,
+  padding: 18,
   marginBottom: 20,
+  boxShadow: '0 8px 24px rgba(22,163,74,0.06)',
 };
 
-const roleBtnStyle = {
-  padding: '8px 16px',
-  borderRadius: 10,
-  border: '1.5px solid #E5E7EB',
-  background: '#fff',
-  color: '#6B7280',
+const selectorLabelStyle = {
+  display: 'block',
   fontSize: 13,
-  fontWeight: 500,
-  fontFamily: "'Outfit', sans-serif",
-  cursor: 'pointer',
-  transition: 'all 0.15s ease',
+  fontWeight: 700,
+  color: '#166534',
+  marginBottom: 8,
 };
 
-const roleBtnActiveStyle = {
-  border: '1.5px solid #16A34A',
-  background: '#F0FDF4',
-  color: '#16A34A',
-  fontWeight: 700,
-  boxShadow: '0 0 0 3px rgba(22,163,74,0.1)',
+const selectorInputStyle = {
+  width: '100%',
+  borderRadius: 12,
+  border: '1px solid #BBF7D0',
+  padding: '12px 14px',
+  fontSize: 14,
+  color: '#111827',
+  background: '#F9FFFB',
+  outline: 'none',
 };
 
 const cardStyle = {
@@ -267,7 +323,7 @@ const labelStyle = {
   display: 'block',
   fontSize: 11.5,
   fontWeight: 700,
-  color: '#6B7280',
+  color: '#4B5563',
   textTransform: 'uppercase',
   letterSpacing: '0.6px',
   marginBottom: 6,
@@ -333,6 +389,15 @@ const submitBtnStyle = {
   transition: 'all 0.18s ease',
 };
 
+const secondaryBtnStyle = {
+  ...submitBtnStyle,
+  width: 'auto',
+  background: '#FFFFFF',
+  color: '#166534',
+  border: '1px solid #BBF7D0',
+  boxShadow: 'none',
+};
+
 const spinnerStyle = {
   display: 'inline-block',
   width: 15, height: 15,
@@ -346,7 +411,108 @@ const switchTextStyle = {
   textAlign: 'center',
   marginTop: 24,
   fontSize: 13,
-  color: '#9CA3AF',
+  color: '#4B5563',
+};
+
+const overlayStyle = {
+  position: 'fixed',
+  inset: 0,
+  background: 'rgba(15, 23, 42, 0.45)',
+  backdropFilter: 'blur(8px)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 20,
+  zIndex: 1000,
+};
+
+const welcomeModalStyle = {
+  width: '100%',
+  maxWidth: 520,
+  background: '#FFFFFF',
+  borderRadius: 24,
+  padding: '28px 28px 24px',
+  boxShadow: '0 30px 80px rgba(15, 23, 42, 0.22)',
+  border: '1px solid #DCFCE7',
+  textAlign: 'center',
+};
+
+const welcomeBadgeStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '6px 12px',
+  borderRadius: 999,
+  background: '#F0FDF4',
+  color: '#166534',
+  fontSize: 12,
+  fontWeight: 700,
+  marginBottom: 12,
+};
+
+const welcomeTitleStyle = {
+  fontFamily: "'Outfit', sans-serif",
+  fontSize: 28,
+  fontWeight: 800,
+  color: '#111827',
+  margin: 0,
+};
+
+const welcomeTextStyle = {
+  margin: '10px 0 20px',
+  color: '#4B5563',
+  fontSize: 14,
+  lineHeight: 1.6,
+};
+
+const qrCardStyle = {
+  background: '#F8FAFC',
+  border: '1px solid #E5E7EB',
+  borderRadius: 20,
+  padding: 18,
+  marginBottom: 18,
+};
+
+const qrImageStyle = {
+  width: 220,
+  maxWidth: '100%',
+  height: 'auto',
+  display: 'block',
+  margin: '0 auto',
+};
+
+const infoGridStyle = {
+  display: 'grid',
+  gap: 10,
+  marginBottom: 18,
+};
+
+const infoItemStyle = {
+  background: '#F9FFFB',
+  border: '1px solid #DCFCE7',
+  borderRadius: 14,
+  padding: '12px 14px',
+  textAlign: 'left',
+};
+
+const infoLabelStyle = {
+  fontSize: 12,
+  fontWeight: 700,
+  color: '#166534',
+  marginBottom: 4,
+};
+
+const infoValueStyle = {
+  fontSize: 14,
+  color: '#111827',
+  wordBreak: 'break-word',
+};
+
+const welcomeActionsStyle = {
+  display: 'flex',
+  gap: 12,
+  justifyContent: 'center',
+  flexWrap: 'wrap',
 };
 
 export default RegisterForm;

@@ -116,14 +116,14 @@ const NotificationsPage = () => {
         {loading ? (
           <div style={emptyState}>
             <FiLoader size={32} color="#D1D5DB" style={{ marginBottom: 12, animation: 'spin 1s linear infinite' }} />
-            <div style={{ color: '#9CA3AF', fontSize: 14 }}>Chargement des notifications…</div>
+            <div style={{ color: '#6B7280', fontSize: 14 }}>Chargement des notifications…</div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {filtered.length === 0 ? (
               <div style={emptyState}>
                 <FiBell size={40} color="#D1D5DB" style={{ marginBottom: 12 }} />
-                <div style={{ color: '#9CA3AF', fontSize: 14 }}>Aucune notification</div>
+                <div style={{ color: '#6B7280', fontSize: 14 }}>Aucune notification</div>
               </div>
             ) : filtered.map((n, i) => {
               const cfg = TYPE_CONFIG[n.type] || TYPE_CONFIG.info;
@@ -138,10 +138,10 @@ const NotificationsPage = () => {
 
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontSize: 14, fontWeight: n.lu ? 500 : 700, color: n.lu ? '#6B7280' : '#111827', fontFamily: "'Outfit',sans-serif" }}>
+                        <span style={{ fontSize: 14, fontWeight: n.lu ? 500 : 700, color: n.lu ? '#4B5563' : '#111827', fontFamily: "'Outfit',sans-serif" }}>
                           {n.titre}
                         </span>
-                        <span style={{ fontSize: 11, color: '#9CA3AF', flexShrink: 0, marginLeft: 12 }}>{timeAgo(n.date)}</span>
+                        <span style={{ fontSize: 11, color: '#6B7280', flexShrink: 0, marginLeft: 12 }}>{timeAgo(n.date)}</span>
                       </div>
                       <p style={{ fontSize: 13, color: '#4B5563', margin: 0, lineHeight: 1.5 }}>{n.message}</p>
                     </div>
@@ -174,10 +174,10 @@ const NotificationsPage = () => {
 };
 
 const titleStyle    = { fontFamily: "'Outfit',sans-serif", fontSize: 26, fontWeight: 800, color: '#111827', letterSpacing: '-0.5px', margin: 0 };
-const subtitleStyle = { fontSize: 13, color: '#6B7280', marginTop: 2 };
+const subtitleStyle = { fontSize: 13, color: '#4B5563', marginTop: 2 };
 const headerIcon    = { width: 48, height: 48, borderRadius: 14, background: '#F5F3FF', border: '1px solid #E9D5FF', display: 'flex', alignItems: 'center', justifyContent: 'center' };
 const markAllBtn    = { display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', background: 'rgba(14,210,160,0.1)', border: '1px solid rgba(14,210,160,0.2)', borderRadius: 10, color: '#0ED2A0', fontSize: 12, fontWeight: 600, cursor: 'pointer' };
-const filterBtn     = { display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFFFFF', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' };
+const filterBtn     = { display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFFFFF', color: '#4B5563', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' };
 const filterBtnActive = { background: 'rgba(167,139,250,0.12)', borderColor: 'rgba(167,139,250,0.25)', color: '#A78BFA' };
 const countBadge    = { background: '#F87171', color: '#fff', borderRadius: 20, fontSize: 10, fontWeight: 800, padding: '1px 6px', marginLeft: 2 };
 const notifCard     = { position: 'relative', background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: 16, padding: '16px 20px', animation: 'slideUp 0.4s ease both', transition: 'border-color 0.2s', boxShadow: '0 10px 24px rgba(15, 23, 42, 0.05)' };

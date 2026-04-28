@@ -4,6 +4,7 @@ import { getOrdonnances, validerDelivrance } from '../../api/pharmacienAPI';
 import { formatGeneratedRef, normalizeCollection } from '../../utils/apiData';
 
 const STATUT = {
+  envoyee:    { label: 'En attente', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)', icon: <FiClock size={11}/> },
   en_attente: { label: 'En attente', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)', icon: <FiClock size={11}/> },
   delivree:   { label: 'Délivrée',   color: '#0ED2A0', bg: 'rgba(14,210,160,0.1)', icon: <FiCheckCircle size={11}/> },
   expiree:    { label: 'Expirée',    color: '#F87171', bg: 'rgba(248,113,113,0.1)', icon: <FiAlertCircle size={11}/> },
@@ -36,7 +37,7 @@ const OrdonnancesPage = () => {
         medecin: ordonnance.medecin?.user ? `Dr. ${ordonnance.medecin.user.prenom} ${ordonnance.medecin.user.nom}` : (ordonnance.medecin || '—'),
         date_emission: ordonnance.date_emission,
         date_expiration: ordonnance.date_expiration,
-        statut: ordonnance.statut || 'en_attente',
+        statut: ordonnance.statut || 'envoyee',
         medicaments: Array.isArray(ordonnance.medicaments) ? ordonnance.medicaments.map((medicament) => ({
           nom: medicament.nom,
           posologie: medicament.pivot?.posologie || medicament.posologie || '—',
@@ -72,7 +73,7 @@ const OrdonnancesPage = () => {
     const matchSearch = !search || `${o.patient?.nom} ${o.patient?.prenom} ${o.ref} ${o.medecin}`.toLowerCase().includes(search.toLowerCase());
     const matchStatut =
       filtreStatut === 'Tous'        ? true :
-      filtreStatut === 'En attente'  ? o.statut === 'en_attente' :
+      filtreStatut === 'En attente'  ? ['en_attente', 'envoyee'].includes(o.statut) :
       filtreStatut === 'Délivrées'   ? o.statut === 'delivree' :
       filtreStatut === 'Expirées'    ? o.statut === 'expiree' : true;
     return matchSearch && matchStatut;
@@ -80,7 +81,7 @@ const OrdonnancesPage = () => {
 
   const counts = {
     total:    ordonnances.length,
-    attente:  ordonnances.filter(o => o.statut === 'en_attente').length,
+    attente:  ordonnances.filter(o => ['en_attente', 'envoyee'].includes(o.statut)).length,
     delivree: ordonnances.filter(o => o.statut === 'delivree').length,
     expir:    ordonnances.filter(o => o.statut === 'expiree').length,
   };
@@ -155,8 +156,8 @@ const OrdonnancesPage = () => {
             </thead>
             <tbody>
               {filtered.map((o, i) => {
-                const st = STATUT[o.statut] || STATUT.en_attente;
-                const expireSoon = o.statut === 'en_attente' && isExpiringSoon(o.date_expiration);
+                const st = STATUT[o.statut] || STATUT.envoyee;
+                const expireSoon = ['en_attente', 'envoyee'].includes(o.statut) && isExpiringSoon(o.date_expiration);
                 return (
                   <tr key={o.id}
                     style={{ animation: `fadeIn 0.4s ease ${i*40}ms both`, transition: 'background 0.15s', cursor: 'pointer' }}
@@ -204,7 +205,7 @@ const OrdonnancesPage = () => {
                     <td style={tdStyle} onClick={e => e.stopPropagation()}>
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button style={iconBtn} onClick={() => setSelected(o)} title="Voir détails"><FiEye size={13}/></button>
-                        {o.statut === 'en_attente' && (
+                        {['en_attente', 'envoyee'].includes(o.statut) && (
                           <button style={{ ...iconBtn, background: 'rgba(14,210,160,0.1)', borderColor: 'rgba(14,210,160,0.2)', color: '#0ED2A0' }}
                             onClick={() => handleDeliver(o)} title="Valider la délivrance">
                             <FiCheckCircle size={13}/>

@@ -1,39 +1,86 @@
 import { useState, useEffect } from 'react';
-import { getMesRendezVous, prendreRendezVous, annulerRendezVous } from '../../api/patientAPI';
+import { getMesRendezVous, prendreRendezVous, annulerRendezVous, getMedecinsDisponibles } from '../../api/patientAPI';
 import { FiCalendar, FiPlus, FiX, FiClock, FiMapPin, FiUser } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 const STATUS_CONFIG = {
-  planifie:  { label: 'Planifié',  color: '#38BDF8', bg: 'rgba(56,189,248,0.1)' },
-  confirme:  { label: 'Confirmé',  color: '#0ED2A0', bg: 'rgba(14,210,160,0.1)' },
-  annule:    { label: 'Annulé',    color: '#F87171', bg: 'rgba(248,113,113,0.1)' },
-  termine:   { label: 'Terminé',   color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
+  en_attente: { label: 'En attente', color: '#FBBF24', bg: 'rgba(251,191,36,0.1)' },
+  confirme: { label: 'Confirmé', color: '#0ED2A0', bg: 'rgba(14,210,160,0.1)' },
+  annule:   { label: 'Annulé',  color: '#F87171', bg: 'rgba(248,113,113,0.1)' },
+  termine:  { label: 'Terminé', color: '#38BDF8', bg: 'rgba(56,189,248,0.1)' },
 };
+
+const normalizeDoctorName = (medecin) => {
+  if (!medecin) return '';
+  if (typeof medecin === 'string') return medecin;
+
+  if (medecin.user) {
+    return `Dr. ${medecin.user.prenom} ${medecin.user.nom}`;
+  }
+
+  const fullName = [medecin.prenom, medecin.nom].filter(Boolean).join(' ').trim();
+  return fullName ? `Dr. ${fullName}` : '';
+};
+
+const formatMedecinOptionLabel = (medecin) => {
+  if (!medecin) return '';
+
+  const nom = medecin.nom || '';
+  const prenom = medecin.prenom || '';
+  const fullName = nom.startsWith('Dr.') ? `${nom} ${prenom}`.trim() : `${prenom} ${nom}`.trim();
+
+  return [
+    fullName,
+    medecin.specialite,
+    medecin.centre,
+  ].filter(Boolean).join(' - ');
+};
+
+const normalizeRendezVous = (rdv = {}) => ({
+  ...rdv,
+  status: rdv.status || rdv.statut || 'en_attente',
+  type: rdv.type === 'teleconsultation' ? 'teleconsultation' : 'presentiel',
+  medecin: normalizeDoctorName(rdv.medecin),
+  centre: rdv.centre || rdv.medecin?.centreSante?.nom || rdv.medecin?.centre || '',
+});
 
 const RendezVousPatientPage = () => {
   const [rdvs, setRdvs]         = useState([]);
+  const [medecins, setMedecins] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [showModal, setShowModal]= useState(false);
   const [filter, setFilter]     = useState('all');
 
-  const [form, setForm] = useState({ date_heure: '', motif: '', type: 'presentiel', notes: '' });
+  const [form, setForm] = useState({ medecin_id: '', date_heure: '', motif: '', type: 'presentiel', notes: '' });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { loadRdvs(); }, []);
+  useEffect(() => {
+    loadRdvs();
+    loadMedecins();
+  }, []);
 
   const loadRdvs = async () => {
     try {
       const res = await getMesRendezVous();
-      setRdvs(res.data?.data || res.data || []);
+      setRdvs((res.data?.data || res.data || []).map(normalizeRendezVous));
     } catch {
       // demo data
       setRdvs([
         { id: 1, date_heure: '2026-03-28T10:00:00', motif: 'Suivi traitement', type: 'presentiel',
           status: 'confirme', medecin: 'Dr. Ndiaye Moussa', centre: 'Centre de Santé Médina' },
         { id: 2, date_heure: '2026-04-05T14:30:00', motif: 'Consultation générale', type: 'teleconsultation',
-          status: 'planifie', medecin: 'Dr. Diallo Aminata', centre: 'Hôpital Principal' },
-      ]);
+          status: 'en_attente', medecin: 'Dr. Diallo Aminata', centre: 'Hôpital Principal' },
+      ].map(normalizeRendezVous));
     } finally { setLoading(false); }
+  };
+
+  const loadMedecins = async () => {
+    try {
+      const res = await getMedecinsDisponibles();
+      setMedecins(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      setMedecins([]);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -41,12 +88,12 @@ const RendezVousPatientPage = () => {
     setSaving(true);
     try {
       await prendreRendezVous(form);
-      toast.success('Rendez-vous pris avec succès !');
+      toast.success('Demande de rendez-vous envoyée au médecin');
       setShowModal(false);
-      setForm({ date_heure: '', motif: '', type: 'presentiel', notes: '' });
+      setForm({ medecin_id: '', date_heure: '', motif: '', type: 'presentiel', notes: '' });
       loadRdvs();
     } catch {
-      toast.error('Erreur lors de la prise de rendez-vous');
+      toast.error('Erreur lors de l’envoi de la demande');
     } finally { setSaving(false); }
   };
 
@@ -62,9 +109,9 @@ const RendezVousPatientPage = () => {
   const filtered = filter === 'all' ? rdvs : rdvs.filter(r => r.status === filter);
 
   const counts = {
-    all:       rdvs.length,
-    planifie:  rdvs.filter(r => r.status === 'planifie').length,
-    confirme:  rdvs.filter(r => r.status === 'confirme').length,
+    all:        rdvs.length,
+    en_attente: rdvs.filter(r => r.status === 'en_attente').length,
+    confirme:   rdvs.filter(r => r.status === 'confirme').length,
     termine:   rdvs.filter(r => r.status === 'termine').length,
   };
 
@@ -73,20 +120,20 @@ const RendezVousPatientPage = () => {
       <div className="topbar">
         <div>
           <p style={subStyle}>Mes rendez-vous</p>
-          <h1 style={titleStyle}>Agenda & Consultations</h1>
+          <h1 style={titleStyle}>Demandes de rendez-vous</h1>
         </div>
         <button style={addBtn} onClick={() => setShowModal(true)}>
-          <FiPlus size={16} /> Prendre un RDV
+          <FiPlus size={16} /> Demander un RDV
         </button>
       </div>
 
       {/* Stats */}
       <div style={statsRow}>
         {[
-          { key: 'all',      label: 'Total',     color: '#111827' },
-          { key: 'planifie', label: 'Planifiés', color: '#38BDF8' },
-          { key: 'confirme', label: 'Confirmés', color: '#0ED2A0' },
-          { key: 'termine',  label: 'Terminés',  color: '#FBBF24' },
+          { key: 'all',       label: 'Total',      color: '#111827' },
+          { key: 'en_attente', label: 'En attente', color: '#FBBF24' },
+          { key: 'confirme',  label: 'Confirmés', color: '#0ED2A0' },
+          { key: 'termine',   label: 'Terminés',   color: '#38BDF8' },
         ].map(s => (
           <button key={s.key} onClick={() => setFilter(s.key)}
             style={{ ...statChip, ...(filter === s.key ? { borderColor: s.color, background: `${s.color}10` } : {}) }}>
@@ -132,7 +179,7 @@ const RendezVousPatientPage = () => {
                   <span style={{ ...typeBadge, color: rdv.type === 'teleconsultation' ? '#A78BFA' : '#0ED2A0' }}>
                     {rdv.type === 'teleconsultation' ? '🎥 Télé' : '🏥 Présentiel'}
                   </span>
-                  {(rdv.status === 'planifie' || rdv.status === 'confirme') && (
+                  {(rdv.status === 'en_attente' || rdv.status === 'confirme') && (
                     <button onClick={() => handleCancel(rdv.id)} style={cancelBtn}>
                       <FiX size={12}/> Annuler
                     </button>
@@ -149,10 +196,26 @@ const RendezVousPatientPage = () => {
         <div style={overlay} onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
           <div style={modal}>
             <div style={modalHeader}>
-              <span style={modalTitle}>Nouveau rendez-vous</span>
+              <span style={modalTitle}>Nouvelle demande de rendez-vous</span>
               <button onClick={() => setShowModal(false)} style={closeBtn}><FiX size={18}/></button>
             </div>
             <form onSubmit={handleSubmit}>
+              <div style={formGroup}>
+                <label style={formLabel}>Médecin *</label>
+                <select
+                  required
+                  style={formInput}
+                  value={form.medecin_id}
+                  onChange={e => setForm({ ...form, medecin_id: e.target.value })}
+                >
+                  <option value="">Choisir un médecin</option>
+                  {medecins.map((medecin) => (
+                    <option key={medecin.id} value={medecin.id}>
+                      {formatMedecinOptionLabel(medecin)}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div style={formGroup}>
                 <label style={formLabel}>Date et heure *</label>
                 <input type="datetime-local" required style={formInput}
@@ -180,7 +243,7 @@ const RendezVousPatientPage = () => {
               <div style={{ display:'flex', gap:10, marginTop:6 }}>
                 <button type="button" onClick={() => setShowModal(false)} style={cancelBtnModal}>Annuler</button>
                 <button type="submit" disabled={saving} style={submitBtn}>
-                  {saving ? 'Envoi…' : 'Confirmer le RDV'}
+                  {saving ? 'Envoi…' : 'Envoyer la demande'}
                 </button>
               </div>
             </form>
@@ -200,7 +263,7 @@ const Empty = ({ onNew }) => (
   <div style={{ textAlign:'center', padding:'60px 20px' }}>
     <div style={{ fontSize:48, marginBottom:16 }}>📅</div>
     <div style={{ color:'#6B7280', fontSize:15, marginBottom:20 }}>Aucun rendez-vous trouvé</div>
-    <button style={addBtn} onClick={onNew}><FiPlus size={14}/> Prendre un rendez-vous</button>
+    <button style={addBtn} onClick={onNew}><FiPlus size={14}/> Demander un rendez-vous</button>
   </div>
 );
 

@@ -27,6 +27,7 @@ const Sidebar = () => {
 
   const medecinLinks = [
     { to: '/medecin',                    icon: <FiHome />,      label: t('nav.dashboard') },
+    { to: '/medecin/tableau-bord',       icon: <FiBarChart2 />, label: 'Suivi medical' },
     { to: '/medecin/patients',           icon: <FiUsers />,     label: t('nav.patients') },
     { to: '/medecin/consultations',      icon: <FiClipboard />, label: t('nav.consultations') },
     { to: '/medecin/prescriptions',      icon: <FiFileText />,  label: t('nav.prescriptions') },
@@ -51,6 +52,8 @@ const Sidebar = () => {
   const adminLinks = [
     { to: '/admin',                icon: <FiHome />,      label: t('nav.dashboard') },
     { to: '/admin/utilisateurs',   icon: <FiUsers />,     label: t('nav.utilisateurs') },
+    { to: '/admin/roles-permissions', icon: <FiShield />, label: 'Roles & droits' },
+    { to: '/admin/securite',       icon: <FiShield />,    label: 'Securite' },
     { to: '/admin/centres-sante',  icon: <FiSettings />,  label: t('nav.centres_sante') },
     { to: '/admin/campagnes',      icon: <FiBell />,      label: t('nav.campagnes') },
     { to: '/admin/statistiques',   icon: <FiBarChart2 />, label: t('nav.statistiques') },
@@ -144,7 +147,7 @@ const Sidebar = () => {
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = '#F9FAFB';
-            e.currentTarget.style.color = '#6B7280';
+            e.currentTarget.style.color = '#4B5563';
             e.currentTarget.style.borderColor = '#E5E7EB';
           }}
         >
@@ -253,7 +256,7 @@ const navStyle = {
 const navSectionLabel = {
   fontSize: 10,
   fontWeight: 700,
-  color: '#9CA3AF',
+  color: '#4B5563',
   textTransform: 'uppercase',
   letterSpacing: '0.8px',
   padding: '0 8px',
@@ -270,7 +273,7 @@ const navLinkStyle = {
   borderRadius: 8,
   fontSize: 13.5,
   fontWeight: 500,
-  color: '#6B7280',
+  color: '#4B5563',
   transition: 'all 0.15s ease',
   border: '1px solid transparent',
   textDecoration: 'none',
@@ -305,7 +308,7 @@ const logoutBtnStyle = {
   borderRadius: 8,
   border: '1px solid #E5E7EB',
   background: '#F9FAFB',
-  color: '#6B7280',
+  color: '#4B5563',
   fontSize: 13.5,
   fontWeight: 500,
   cursor: 'pointer',

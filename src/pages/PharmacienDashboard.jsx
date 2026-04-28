@@ -85,7 +85,7 @@ const DashboardHome = () => {
             </div>
             <div className="value">{s.value}</div>
             <div className="label">{s.label}</div>
-            <div style={{ fontSize: 11, color: '#6B7280', marginTop: 5 }}>{s.sub}</div>
+            <div style={{ fontSize: 11, color: '#4B5563', marginTop: 5 }}>{s.sub}</div>
           </div>
         ))}
       </div>
@@ -100,7 +100,7 @@ const DashboardHome = () => {
           {stats.recentes.length === 0 ? (
             <div style={emptyState}>
               <div style={{ fontSize: 36, marginBottom: 10 }}>💊</div>
-              <div style={{ fontSize: 13, color: '#6B7280', textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: '#4B5563', textAlign: 'center' }}>
                 Aucune ordonnance<br />en attente de traitement
               </div>
             </div>
@@ -139,7 +139,7 @@ const DashboardHome = () => {
                 <div style={{ ...actionItem, borderLeftColor: action.color }}>
                   <div>
                     <div style={{ fontSize: 13, color: '#374151', fontWeight: 600 }}>{action.label}</div>
-                    <div style={{ fontSize: 11, color: '#6B7280', marginTop: 2 }}>{action.meta}</div>
+                    <div style={{ fontSize: 11, color: '#4B5563', marginTop: 2 }}>{action.meta}</div>
                   </div>
                   <span style={{ color: action.color }}>→</span>
                 </div>
@@ -169,7 +169,7 @@ const PharmacienDashboard = () => (
   </div>
 );
 
-const subGreetStyle = { fontSize: 13, color: '#6B7280', marginBottom: 4, fontWeight: 500 };
+const subGreetStyle = { fontSize: 13, color: '#4B5563', marginBottom: 4, fontWeight: 500 };
 const pageTitleStyle = {
   fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 800, letterSpacing: '-0.5px',
   color: '#111827',
@@ -221,7 +221,7 @@ const recentPatientStyle = {
 };
 const recentMetaStyle = {
   fontSize: 11,
-  color: '#6B7280',
+  color: '#4B5563',
   marginTop: 2,
 };
 const waitingBadgeStyle = {

@@ -1,8 +1,105 @@
 import { useState, useEffect } from 'react';
 import { getCarnetVaccination } from '../../api/patientAPI';
+import { useAuth } from '../../context/AuthContext';
 import { FiShield, FiCalendar, FiAlertCircle, FiCheck, FiClock, FiDownload } from 'react-icons/fi';
 
+const escapeHtml = (value) => String(value)
+  .replaceAll('&', '&amp;')
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;')
+  .replaceAll('"', '&quot;')
+  .replaceAll("'", '&#39;');
+
+const formatDate = (value, fallback = '—') => (
+  value ? new Date(value).toLocaleDateString('fr-FR') : fallback
+);
+
+const buildVaccinationSheetHtml = ({
+  patientName,
+  administeredCount,
+  rappelCount,
+  retardCount,
+  rowsHtml,
+}) => `
+  <!doctype html>
+  <html lang="fr">
+    <head>
+      <meta charset="utf-8" />
+      <title>Carnet de vaccination - ${escapeHtml(patientName)}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4fbf6; color: #111827; }
+        .sheet { max-width: 980px; margin: 28px auto; background: #fff; border: 1px solid #dbe5dd; border-radius: 22px; overflow: hidden; }
+        .hero { padding: 28px 32px; background: linear-gradient(135deg, #ecfdf3, #f8fffb); border-bottom: 1px solid #dbe5dd; }
+        .brand { color: #16A34A; font-weight: 800; font-size: 26px; margin: 0 0 8px; }
+        .title { font-size: 30px; font-weight: 800; margin: 0 0 8px; }
+        .subtitle { color: #4b5563; margin: 0; }
+        .chips { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .chip { padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+        .chip-ok { color: #059669; background: rgba(14,210,160,0.12); }
+        .chip-warn { color: #d97706; background: rgba(251,191,36,0.16); }
+        .chip-danger { color: #dc2626; background: rgba(248,113,113,0.14); }
+        .section { padding: 24px 32px 32px; }
+        .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+        .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px 16px; }
+        .label { font-size: 11px; text-transform: uppercase; letter-spacing: .7px; color: #6b7280; font-weight: 700; margin-bottom: 6px; }
+        .value { font-size: 15px; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+        th { background: #f9fafb; font-size: 12px; text-transform: uppercase; color: #6b7280; letter-spacing: .6px; }
+        .footer { padding: 0 32px 28px; color: #6b7280; font-size: 12px; }
+        @media print {
+          body { background: #fff; }
+          .sheet { margin: 0; border: none; border-radius: 0; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="sheet">
+        <div class="hero">
+          <p class="brand">DocSecur</p>
+          <h1 class="title">Carnet de vaccination</h1>
+          <p class="subtitle">Suivi vaccinal du patient</p>
+          <div class="chips">
+            <span class="chip chip-ok">${escapeHtml(`${administeredCount} vaccin(s) administré(s)`)}</span>
+            <span class="chip chip-warn">${escapeHtml(`${rappelCount} rappel(s) à venir`)}</span>
+            <span class="chip chip-danger">${escapeHtml(`${retardCount} vaccin(s) en retard`)}</span>
+          </div>
+        </div>
+        <div class="section">
+          <div class="meta">
+            <div class="card">
+              <div class="label">Patient</div>
+              <div class="value">${escapeHtml(patientName)}</div>
+            </div>
+            <div class="card">
+              <div class="label">Date d'édition</div>
+              <div class="value">${escapeHtml(new Date().toLocaleDateString('fr-FR'))}</div>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Vaccin</th>
+                <th>Date d'administration</th>
+                <th>Prochain rappel</th>
+                <th>Centre</th>
+                <th>Lot</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+        <div class="footer">
+          Document généré depuis l'espace patient DocSecur. Vous pouvez choisir "Enregistrer en PDF" dans la fenêtre d'impression.
+        </div>
+      </div>
+    </body>
+  </html>
+`;
+
 const CarnetVaccinationPage = () => {
+  const { user } = useAuth();
   const [carnet, setCarnet]     = useState(null);
   const [vaccins, setVaccins]   = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -54,6 +151,70 @@ const CarnetVaccinationPage = () => {
     return new Date(v.date_rappel) < new Date() && !v.estAJour;
   });
 
+  const handleExport = () => {
+    const patientName = [user?.prenom, user?.nom].filter(Boolean).join(' ').trim() || 'Patient DocSecur';
+    const rowsHtml = vaccins.length
+      ? vaccins.map((vaccin) => {
+          const statut = !vaccin.date_rappel
+            ? 'À jour'
+            : (new Date(vaccin.date_rappel) < new Date() && !vaccin.estAJour)
+              ? 'En retard'
+              : 'Planifié';
+
+          return `
+            <tr>
+              <td>${escapeHtml(vaccin.nom || 'Vaccin')}</td>
+              <td>${escapeHtml(formatDate(vaccin.date_administration))}</td>
+              <td>${escapeHtml(formatDate(vaccin.date_rappel, 'Pas de rappel'))}</td>
+              <td>${escapeHtml(vaccin.centre || '—')}</td>
+              <td>${escapeHtml(vaccin.lot || '—')}</td>
+              <td>${escapeHtml(statut)}</td>
+            </tr>
+          `;
+        }).join('')
+      : `
+          <tr>
+            <td colspan="6">${escapeHtml('Aucun vaccin enregistré')}</td>
+          </tr>
+        `;
+
+    const html = buildVaccinationSheetHtml({
+      patientName,
+      administeredCount: administered.length,
+      rappelCount: rappelsAVenir.length,
+      retardCount: enRetard.length,
+      rowsHtml,
+    });
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const cleanup = () => {
+      setTimeout(() => {
+        iframe.remove();
+      }, 1000);
+    };
+
+    iframe.onload = () => {
+      const frameWindow = iframe.contentWindow;
+      if (!frameWindow) {
+        cleanup();
+        return;
+      }
+      frameWindow.focus();
+      frameWindow.print();
+      cleanup();
+    };
+
+    iframe.srcdoc = html;
+  };
+
   if (loading) return <Loader />;
 
   const tabs = [
@@ -69,7 +230,7 @@ const CarnetVaccinationPage = () => {
           <p style={subStyle}>Suivi vaccinal</p>
           <h1 style={titleStyle}>Carnet de Vaccination</h1>
         </div>
-        <button style={dlBtn}>
+        <button style={dlBtn} onClick={handleExport}>
           <FiDownload size={14}/> Exporter PDF
         </button>
       </div>

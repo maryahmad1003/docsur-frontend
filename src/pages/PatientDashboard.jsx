@@ -105,7 +105,7 @@ const DashboardHome = () => {
       {/* Topbar */}
       <div className="topbar">
         <div>
-          <p style={{ fontSize: 13, color: '#9CA3AF', marginBottom: 3, fontWeight: 500 }}>
+          <p style={{ fontSize: 13, color: '#4B5563', marginBottom: 3, fontWeight: 500 }}>
             {getGreeting()},
           </p>
           <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: 24, fontWeight: 800, color: '#111827', letterSpacing: '-0.5px' }}>
@@ -126,7 +126,7 @@ const DashboardHome = () => {
             <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 700, color: '#111827' }}>
               Votre santé au centre de nos priorités
             </div>
-            <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: '#4B5563', marginTop: 2 }}>
               Toutes vos informations médicales sécurisées en un seul endroit
             </div>
           </div>
@@ -142,13 +142,13 @@ const DashboardHome = () => {
           { label: 'Groupe sanguin', value: summary.groupeSanguin, hint: summary.allergies, color: '#166534' },
         ].map((item, index) => (
           <div key={item.label} style={{ ...summaryCardStyle, animation: `slideUp 0.4s ease ${index * 60}ms both` }}>
-            <div style={{ fontSize: 12, color: '#6B7280', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+            <div style={{ fontSize: 12, color: '#4B5563', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
               {item.label}
             </div>
             <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 28, fontWeight: 800, color: item.color }}>
               {item.value}
             </div>
-            <div style={{ fontSize: 12, color: '#6B7280', marginTop: 6 }}>{item.hint}</div>
+            <div style={{ fontSize: 12, color: '#4B5563', marginTop: 6 }}>{item.hint}</div>
           </div>
         ))}
       </div>
@@ -159,7 +159,7 @@ const DashboardHome = () => {
           <Link to="/patient/rendez-vous" style={nextPanelLinkStyle}>Voir l’agenda</Link>
         </div>
         {summary.prochainsRendezVous.length === 0 ? (
-          <div style={{ color: '#6B7280', fontSize: 14 }}>Aucun rendez-vous planifié pour le moment.</div>
+          <div style={{ color: '#4B5563', fontSize: 14 }}>Aucun rendez-vous planifié pour le moment.</div>
         ) : (
           <div style={{ display: 'grid', gap: 12 }}>
             {summary.prochainsRendezVous.map((rdv) => {
@@ -168,10 +168,10 @@ const DashboardHome = () => {
                 <div key={rdv.id} style={nextAppointmentCardStyle}>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{rdv.motif || 'Consultation'}</div>
-                    <div style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>
+                    <div style={{ fontSize: 12, color: '#4B5563', marginTop: 4 }}>
                       {date.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long' })} à {date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                     </div>
-                    <div style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>
+                    <div style={{ fontSize: 12, color: '#4B5563', marginTop: 4 }}>
                       {rdv.medecin || 'Médecin DocSecur'} · {rdv.centre || 'Centre de santé'}
                     </div>
                   </div>
@@ -210,7 +210,7 @@ const DashboardHome = () => {
               <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 4 }}>
                 {card.label}
               </div>
-              <div style={{ fontSize: 12, color: '#6B7280' }}>{card.desc}</div>
+              <div style={{ fontSize: 12, color: '#4B5563' }}>{card.desc}</div>
               <div style={{ marginTop: 10, fontSize: 11, fontWeight: 700, color: card.color, letterSpacing: '0.3px' }}>
                 ACCÉDER →
               </div>

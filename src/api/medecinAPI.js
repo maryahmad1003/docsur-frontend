@@ -9,7 +9,8 @@ export const getConstantesVitales = (id) => API.get(`/medecin/patients/${id}/con
 export const updatePatient = (id, data) => API.put(`/medecin/patients/${id}/update`, data);
 
 // Consultations
-export const getConsultations = () => API.get('/medecin/consultations');
+export const getConsultations = (params) => API.get('/medecin/consultations', { params });
+export const getTableauBordMedecin = () => API.get('/medecin/tableau-bord');
 export const getConsultation = (id) => API.get(`/medecin/consultations/${id}`);
 export const creerConsultation = (data) => API.post('/medecin/consultations', data);
 export const updateConsultation = (id, data) => API.put(`/medecin/consultations/${id}`, data);
@@ -17,6 +18,7 @@ export const supprimerConsultation = (id) => API.delete(`/medecin/consultations/
 
 // Prescriptions
 export const getPrescriptions = () => API.get('/medecin/prescriptions');
+export const getPharmacies = () => API.get('/medecin/pharmacies');
 export const getPrescription = (id) => API.get(`/medecin/prescriptions/${id}`);
 export const creerPrescription = (data) => API.post('/medecin/prescriptions', data);
 export const envoyerPharmacie = (id, data) => API.post(`/medecin/prescriptions/${id}/envoyer-pharmacie`, data);
@@ -34,6 +36,8 @@ export const creerDemandeAnalyse = (data) => API.post('/medecin/demandes-analyse
 
 // Rendez-vous du médecin
 export const getRendezVousMedecin = (params) => API.get('/medecin/rendez-vous', { params });
+export const confirmerRendezVous = (id) => API.put(`/medecin/rendez-vous/${id}/confirmer`);
+export const refuserRendezVous = (id) => API.put(`/medecin/rendez-vous/${id}/refuser`);
 
 // QR Code
 export const scanQRCode = (code) => API.post('/medecin/qrcode/scanner', { code });

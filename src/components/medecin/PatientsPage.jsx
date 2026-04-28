@@ -58,6 +58,7 @@ export default function PatientsPage() {
   const [saving, setSaving]     = useState(false);
   const [toast, setToast]       = useState(null);
   const [motDePasse, setMotDePasse] = useState(null);
+  const [generatedQr, setGeneratedQr] = useState(null);
   const [editMode, setEditMode]     = useState(false);
   const [editData, setEditData]     = useState({});
 
@@ -97,6 +98,7 @@ export default function PatientsPage() {
       };
       setPatients(prev => [nouveau, ...prev]);
       setMotDePasse(data.mot_de_passe);
+      setGeneratedQr(data.qr_code || null);
       setForm(FORM_INIT);
       setShowForm(false);
     } catch (err) {
@@ -319,17 +321,29 @@ export default function PatientsPage() {
         </div>
       )}
 
-      {/* Modal mot de passe temporaire */}
       {motDePasse && (
-        <div style={overlay} onClick={() => setMotDePasse(null)}>
-          <div style={{ ...modal, maxWidth: 420, textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+        <div style={overlay} onClick={() => { setMotDePasse(null); setGeneratedQr(null); }}>
+          <div style={{ ...modal, maxWidth: 520, textAlign: 'center' }} onClick={e => e.stopPropagation()}>
             <FiCheckCircle size={40} color="#0ED2A0" style={{ marginBottom: 16 }} />
             <h2 style={{ ...titleStyle, fontSize: 18, marginBottom: 8 }}>Patient créé avec succès</h2>
             <p style={{ color: '#6B7280', fontSize: 13, marginBottom: 20 }}>
-              Communiquez ce mot de passe temporaire au patient. Il devra le changer lors de sa première connexion.
+              Communiquez ce mot de passe temporaire au patient. Lors de la prochaine visite, son QR code permettra d’accéder rapidement à ses informations.
             </p>
             <div style={passwordBox}>{motDePasse}</div>
-            <button style={submitBtn} onClick={() => setMotDePasse(null)}>Fermer</button>
+            {generatedQr?.svg ? (
+              <div style={{ marginTop: 18 }}>
+                <div style={{ fontSize: 13, color: '#4B5563', marginBottom: 12 }}>QR code généré automatiquement</div>
+                <img
+                  src={`data:image/svg+xml;base64,${generatedQr.svg}`}
+                  alt="QR Code patient"
+                  style={{ width: 200, height: 200, borderRadius: 14, border: '1px solid #E5E7EB', background: '#fff', padding: 12, margin: '0 auto' }}
+                />
+                {generatedQr?.payload ? (
+                  <div style={{ fontSize: 11, color: '#6B7280', marginTop: 12, wordBreak: 'break-all' }}>{generatedQr.payload}</div>
+                ) : null}
+              </div>
+            ) : null}
+            <button style={{ ...submitBtn, marginTop: 20 }} onClick={() => { setMotDePasse(null); setGeneratedQr(null); }}>Fermer</button>
           </div>
         </div>
       )}

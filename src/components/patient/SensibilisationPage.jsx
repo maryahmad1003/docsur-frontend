@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FiBookOpen, FiClock, FiUser, FiTag, FiChevronRight, FiX, FiSearch } from 'react-icons/fi';
+import { getCampagnesPatient } from '../../api/patientAPI';
 
 const CATEGORIES = ['Toutes', 'Prévention', 'Nutrition', 'Cardiologie', 'Vaccination', 'Santé mentale'];
 
@@ -11,14 +12,26 @@ const SensibilisationPage = () => {
   const [search, setSearch]           = useState('');
 
   useEffect(() => {
-    setArticles([]);
-    setLoading(false);
+    const load = async () => {
+      try {
+        const response = await getCampagnesPatient();
+        const payload = Array.isArray(response.data) ? response.data : response.data?.data || [];
+        setArticles(payload);
+      } catch {
+        setArticles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
   const filtered = articles.filter(a => {
     const matchCat = categorie === 'Toutes' || a.categorie === categorie;
+    const tags = Array.isArray(a.tags) ? a.tags : [];
     const matchSearch = !search || a.titre.toLowerCase().includes(search.toLowerCase()) ||
-      a.tags.some(t => t.toLowerCase().includes(search.toLowerCase()));
+      tags.some(t => t.toLowerCase().includes(search.toLowerCase()));
     return matchCat && matchSearch;
   });
 
